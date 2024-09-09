@@ -3,7 +3,7 @@ package server
 import (
 	swaggerFiles "github.com/swaggo/files"
 	ginSwagger "github.com/swaggo/gin-swagger"
-	"golang-template/internal/platform/server/handler/status"
+	"user-service/internal/platform/server/handler/status"
 )
 
 // @title           Golang Template API

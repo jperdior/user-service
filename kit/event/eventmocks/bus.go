@@ -4,7 +4,7 @@ package eventmocks
 
 import (
 	context "context"
-	event "golang-template/kit/event"
+	event "user-service/kit/event"
 
 	mock "github.com/stretchr/testify/mock"
 )

@@ -1,11 +1,11 @@
-# Makefile for golang-template
+# Makefile for user-service
 # vim: set ft=make ts=8 noet
 # Licence MIT
 
 # Variables
 # UNAME		:= $(shell uname -s)
 PWD = $(shell pwd)
-PROJECT_NAME = golang-template
+PROJECT_NAME = user-service
 API := api
 DOCKER_COMPOSE=docker-compose -p ${PROJECT_NAME} -f ${PWD}/ops/docker/docker-compose.yml
 GREEN=\033[0;32m

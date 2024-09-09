@@ -1,9 +1,9 @@
 package main
 
 import (
-	"golang-template/cmd/api/bootstrap"
-	_ "golang-template/docs"
 	"log"
+	"user-service/cmd/api/bootstrap"
+	_ "user-service/docs"
 )
 
 func main() {

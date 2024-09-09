@@ -3,8 +3,8 @@ package inmemory
 import (
 	"context"
 	"fmt"
-	"golang-template/kit/query"
 	"log"
+	"user-service/kit/query"
 )
 
 // QueryBus is an in-memory implementation of the query.Bus.

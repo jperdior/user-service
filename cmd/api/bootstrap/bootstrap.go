@@ -3,9 +3,9 @@ package bootstrap
 import (
 	"context"
 	"github.com/kelseyhightower/envconfig"
-	"golang-template/internal/platform/bus/inmemory"
-	"golang-template/internal/platform/server"
 	"time"
+	"user-service/internal/platform/bus/inmemory"
+	"user-service/internal/platform/server"
 )
 
 func Run() error {

@@ -4,7 +4,7 @@ package querymocks
 
 import (
 	context "context"
-	query "golang-template/kit/query"
+	query "user-service/kit/query"
 
 	mock "github.com/stretchr/testify/mock"
 )

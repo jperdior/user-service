@@ -4,7 +4,7 @@ package commandmocks
 
 import (
 	context "context"
-	command "golang-template/kit/command"
+	command "user-service/kit/command"
 
 	mock "github.com/stretchr/testify/mock"
 )

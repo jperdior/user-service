@@ -4,14 +4,14 @@ import (
 	"context"
 	"fmt"
 	"github.com/gin-gonic/gin"
-	"golang-template/kit/command"
-	"golang-template/kit/event"
-	"golang-template/kit/query"
 	"log"
 	"net/http"
 	"os"
 	"os/signal"
 	"time"
+	"user-service/kit/command"
+	"user-service/kit/event"
+	"user-service/kit/query"
 )
 
 type Server struct {

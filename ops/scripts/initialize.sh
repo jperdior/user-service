@@ -18,12 +18,12 @@ if [ -z "$project_name" ]; then
   exit 1
 fi
 
-# Find and replace 'golang-template' with the new project name in all files
-find . -type f -exec sed -i '' "s/golang-template/${project_name}/g" {} +
+# Find and replace 'user-service' with the new project name in all files
+find . -type f -exec sed -i '' "s/user-service/${project_name}/g" {} +
 
-# Optional: Rename the project folder if it contains 'golang-template' in the name
-if [[ $(basename "$PWD") == *"golang-template"* ]]; then
-  new_dir=$(echo "$PWD" | sed "s/golang-template/${project_name}/")
+# Optional: Rename the project folder if it contains 'user-service' in the name
+if [[ $(basename "$PWD") == *"user-service"* ]]; then
+  new_dir=$(echo "$PWD" | sed "s/user-service/${project_name}/")
   cd ..
   mv "$(basename "$PWD")" "$new_dir"
   cd "$new_dir"

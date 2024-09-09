@@ -2,8 +2,8 @@ package inmemory
 
 import (
 	"context"
-	"golang-template/kit/event"
 	"log"
+	"user-service/kit/event"
 )
 
 // EventBus is an in-memory implementation of the event.Bus.

@@ -3,8 +3,8 @@ package inmemory
 import (
 	"context"
 	"fmt"
-	"golang-template/kit/command"
 	"log"
+	"user-service/kit/command"
 )
 
 // CommandBus is an in-memory implementation of the command.Bus.

@@ -5,6 +5,6 @@ FROM alpine:3.8
 
 EXPOSE 9091
 
-COPY bin/golang-template /
+COPY bin/user-service /
 
 ENTRYPOINT [ "/car-pooling-challenge" ]
