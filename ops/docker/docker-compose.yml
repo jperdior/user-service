@@ -12,4 +12,26 @@ services:
           interval: 1s
           timeout: 3s
           retries: 10
+      depends_on:
+        database:
+          condition: service_healthy
 
+    database:
+      image: mariadb:latest
+      environment:
+        - MARIADB_ROOT_PASSWORD=verysecretpass
+      ports:
+        - "3306:3306"
+      restart: always
+      volumes:
+        - db:/var/lib/mysql
+        - ../mysql/init.sql:/docker-entrypoint-initdb.d/init.sql
+      healthcheck:
+        test: [ "CMD-SHELL", "mariadb -u root --password=verysecretpass -e 'SELECT 1'" ]
+        interval: 5s
+        timeout: 10s
+        retries: 5
+
+
+volumes:
+    db:
