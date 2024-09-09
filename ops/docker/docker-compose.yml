@@ -1,0 +1,15 @@
+services:
+    api:
+      build:
+        context: ../..
+        dockerfile: ops/docker/Dockerfile.local
+      ports:
+      - "9091:9091"
+      environment:
+      - PORT=9091
+      healthcheck:
+          test: ["CMD", "curl", "-f", "http://localhost:9091/status"]
+          interval: 1s
+          timeout: 3s
+          retries: 10
+
