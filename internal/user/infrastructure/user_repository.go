@@ -20,8 +20,11 @@ func (u *UserRepositoryImpl) FindByID(id string) (*domain.User, error) {
 		return nil, err
 	}
 	var user domain.User
-	err = u.db.First(&user, uuidBinary).Error
-	return &user, err
+	err = u.db.Where("id = ?", uuidBinary).First(&user).Error
+	if err != nil {
+		return nil, err
+	}
+	return &user, nil
 }
 
 func (u *UserRepositoryImpl) FindByEmail(email string) (*domain.User, error) {
