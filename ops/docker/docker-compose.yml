@@ -19,7 +19,7 @@ services:
     database:
       image: mariadb:latest
       environment:
-        - MARIADB_ROOT_PASSWORD=verysecretpass
+        - MARIADB_ROOT_PASSWORD=root
       ports:
         - "3306:3306"
       restart: always
@@ -27,7 +27,7 @@ services:
         - db:/var/lib/mysql
         - ../mysql/init.sql:/docker-entrypoint-initdb.d/init.sql
       healthcheck:
-        test: [ "CMD-SHELL", "mariadb -u root --password=verysecretpass -e 'SELECT 1'" ]
+        test: [ "CMD-SHELL", "mariadb -u root --password=root -e 'SELECT 1'" ]
         interval: 5s
         timeout: 10s
         retries: 5
