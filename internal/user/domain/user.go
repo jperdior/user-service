@@ -20,6 +20,21 @@ type User struct {
 	Tokens        []UserToken
 }
 
+func NewUser(name, email, password string) (*User, error) {
+	hashedPassword, err := HashPassword(password)
+	if err != nil {
+		return nil, err
+	}
+	base, _ := model.NewBase()
+	return &User{
+		Base:     *base,
+		Name:     name,
+		Email:    email,
+		Password: hashedPassword,
+		Active:   true,
+	}, nil
+}
+
 type UserToken struct {
 	model.Base
 	UserID    []byte `gorm:"type:binary(16);index"` // Foreign key to the User
