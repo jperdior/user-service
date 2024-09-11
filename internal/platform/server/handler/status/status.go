@@ -5,7 +5,7 @@ import (
 	"net/http"
 )
 
-// Status endpoint
+// StatusHandler Status endpoint
 // @Summary Provides the status of the service
 // @Schemes
 // @Description Provides the status of the service

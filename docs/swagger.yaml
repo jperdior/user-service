@@ -1,4 +1,34 @@
 basePath: /api/v1
+definitions:
+  presentation.UserResponse:
+    properties:
+      created_at:
+        type: string
+      email:
+        type: string
+      id:
+        type: string
+      name:
+        type: string
+      updated_at:
+        type: string
+    type: object
+  presentation.registerUserRequest:
+    properties:
+      email:
+        type: string
+      id:
+        type: string
+      name:
+        type: string
+      password:
+        type: string
+    required:
+    - email
+    - id
+    - name
+    - password
+    type: object
 externalDocs:
   description: OpenAPI
   url: https://swagger.io/resources/open-api/
@@ -16,6 +46,41 @@ info:
   title: Golang Template API
   version: "1.0"
 paths:
+  /register:
+    post:
+      consumes:
+      - application/json
+      description: Registers a new user with the provided name, email, and password
+      parameters:
+      - description: User registration details
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/presentation.registerUserRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: User registered successfully
+          schema:
+            $ref: '#/definitions/presentation.UserResponse'
+        "400":
+          description: 'Invalid input" example {"error": "invalid input"}'
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: 'Internal server error" example {"error": "internal server
+            error"}'
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Registers a new user
+      tags:
+      - user
   /status:
     get:
       description: Provides the status of the service

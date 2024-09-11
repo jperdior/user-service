@@ -5,7 +5,10 @@ import (
 	"github.com/kelseyhightower/envconfig"
 	"time"
 	"user-service/internal/platform/bus/inmemory"
+	"user-service/internal/platform/database/mysql"
 	"user-service/internal/platform/server"
+	"user-service/internal/user/application"
+	"user-service/internal/user/infrastructure"
 )
 
 func Run() error {
@@ -17,9 +20,11 @@ func Run() error {
 	}
 
 	var (
-		commandBus = inmemory.NewCommandBus()
-		queryBus   = inmemory.NewQueryBus()
-		eventBus   = inmemory.NewEventBus()
+		commandBus     = inmemory.NewCommandBus()
+		queryBus       = inmemory.NewQueryBus()
+		eventBus       = inmemory.NewEventBus()
+		userRepository = infrastructure.NewUserRepository(mysql.DB)
+		userService    = application.NewUserService(userRepository)
 	)
 
 	ctx, srv := server.New(
@@ -29,7 +34,8 @@ func Run() error {
 		cfg.ShutdownTimeout,
 		commandBus,
 		queryBus,
-		eventBus)
+		eventBus,
+		userService)
 	return srv.Run(ctx)
 }
 
