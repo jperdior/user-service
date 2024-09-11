@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"golang.org/x/crypto/bcrypt"
 	"time"
+	"user-service/kit"
 	"user-service/kit/model"
 )
 
@@ -20,16 +21,16 @@ type User struct {
 	Tokens        []UserToken
 }
 
-func NewUser(name, email, password string) (*User, error) {
-	hashedPassword, err := HashPassword(password)
+func NewUser(uid kit.UuidValueObject, name string, email kit.EmailValueObject, password string) (*User, error) {
+	hashedPassword, err := hashPassword(password)
 	if err != nil {
 		return nil, err
 	}
-	base, _ := model.NewBase()
+	base, _ := model.NewBase(uid.Value())
 	return &User{
 		Base:     *base,
 		Name:     name,
-		Email:    email,
+		Email:    email.Value(),
 		Password: hashedPassword,
 		Active:   true,
 	}, nil
@@ -43,9 +44,7 @@ type UserToken struct {
 	ExpiresAt time.Time
 }
 
-// todo: MOVE TO A SERVICE
-
-func HashPassword(password string) (string, error) {
+func hashPassword(password string) (string, error) {
 	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
 	if err != nil {
 		return "", err
@@ -53,6 +52,7 @@ func HashPassword(password string) (string, error) {
 	return string(hashedPassword), nil
 }
 
+// todo: MOVE TO A SERVICE
 func CheckPasswordHash(password, hash string) bool {
 	err := bcrypt.CompareHashAndPassword([]byte(hash), []byte(password))
 	return err == nil

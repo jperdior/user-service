@@ -58,5 +58,8 @@ stop: ### Stop the docker containers
 analysis: ### Run static analysis and linter
 	docker run --rm -v $(PWD):/app -w /app golangci/golangci-lint:latest golangci-lint run
 
-openapi-init: ### Generate openapi docs
+refresh-openapi: ### Generate openapi docs
 	swag init -g cmd/api/main.go -g internal/platform/server/routes.go -o docs
+
+open-docs:
+	open http://localhost:9091/swagger/index.html

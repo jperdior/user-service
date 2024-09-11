@@ -9,6 +9,7 @@ import (
 	"os"
 	"os/signal"
 	"time"
+	"user-service/internal/user/application"
 	"user-service/kit/command"
 	"user-service/kit/event"
 	"user-service/kit/query"
@@ -21,12 +22,22 @@ type Server struct {
 	shutdownTimeout time.Duration
 
 	//deps
-	commandBus command.Bus
-	queryBus   query.Bus
-	eventBus   event.Bus
+	commandBus  command.Bus
+	queryBus    query.Bus
+	eventBus    event.Bus
+	userService *application.UserService
 }
 
-func New(ctx context.Context, host string, port uint, shutdownTimeout time.Duration, commandBus command.Bus, queryBus query.Bus, eventBus event.Bus) (context.Context, Server) {
+func New(
+	ctx context.Context,
+	host string,
+	port uint,
+	shutdownTimeout time.Duration,
+	commandBus command.Bus,
+	queryBus query.Bus,
+	eventBus event.Bus,
+	userService *application.UserService,
+) (context.Context, Server) {
 	srv := Server{
 		httpAddr: fmt.Sprintf("%s:%d", host, port),
 		engine:   gin.Default(),
@@ -34,9 +45,10 @@ func New(ctx context.Context, host string, port uint, shutdownTimeout time.Durat
 		shutdownTimeout: shutdownTimeout,
 
 		//deps
-		commandBus: commandBus,
-		queryBus:   queryBus,
-		eventBus:   eventBus,
+		commandBus:  commandBus,
+		queryBus:    queryBus,
+		eventBus:    eventBus,
+		userService: userService,
 	}
 
 	srv.registerRoutes()

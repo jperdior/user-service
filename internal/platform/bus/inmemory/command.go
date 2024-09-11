@@ -32,7 +32,6 @@ func (b *CommandBus) Dispatch(ctx context.Context, cmd command.Command) error {
 		if err != nil {
 			log.Printf("Error while handling %s - %s\n", cmd.Type(), err)
 		}
-
 	}()
 
 	return nil

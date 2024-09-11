@@ -12,8 +12,8 @@ type Base struct {
 	UpdatedAt time.Time `json:"updated_at"`
 }
 
-func NewBase() (*Base, error) {
-	id, err := uuid.New().MarshalBinary() // Generates binary UUID
+func NewBase(uid uuid.UUID) (*Base, error) {
+	id, err := uid.MarshalBinary() // Generates binary UUID
 	if err != nil {
 		return nil, err
 	}
