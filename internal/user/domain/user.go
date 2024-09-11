@@ -9,6 +9,11 @@ import (
 	"user-service/kit/model"
 )
 
+const (
+	RoleUser       = "user"
+	RoleSuperAdmin = "admin"
+)
+
 type User struct {
 	model.Base
 	model.BaseAggregate
@@ -19,6 +24,7 @@ type User struct {
 	ResetTokenExp time.Time
 	Active        bool
 	Tokens        []UserToken
+	Roles         []string
 }
 
 func NewUser(uid kit.UuidValueObject, name string, email kit.EmailValueObject, password string) (*User, error) {
@@ -27,13 +33,16 @@ func NewUser(uid kit.UuidValueObject, name string, email kit.EmailValueObject, p
 		return nil, err
 	}
 	base, _ := model.NewBase(uid.Value())
-	return &User{
+	user := &User{
 		Base:     *base,
 		Name:     name,
 		Email:    email.Value(),
 		Password: hashedPassword,
 		Active:   true,
-	}, nil
+		Roles:    []string{RoleUser},
+	}
+	user.Record(NewUserRegisteredEvent(uid.Value().String(), user.Email, user.Roles))
+	return user, nil
 }
 
 type UserToken struct {

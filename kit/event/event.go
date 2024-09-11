@@ -22,21 +22,21 @@ type Handler interface {
 // Type represents a domain event type.
 type Type string
 
-// Event represents a domain command.
+// Event represents a domain event.
 type Event interface {
 	ID() string
-	AggregateID() int
+	AggregateID() string
 	OccurredOn() time.Time
 	Type() Type
 }
 
 type BaseEvent struct {
 	eventID     string
-	aggregateID int
+	aggregateID string
 	occurredOn  time.Time
 }
 
-func NewBaseEvent(aggregateID int) BaseEvent {
+func NewBaseEvent(aggregateID string) BaseEvent {
 	return BaseEvent{
 		eventID:     uuid.New().String(),
 		aggregateID: aggregateID,
@@ -52,6 +52,6 @@ func (b BaseEvent) OccurredOn() time.Time {
 	return b.occurredOn
 }
 
-func (b BaseEvent) AggregateID() int {
+func (b BaseEvent) AggregateID() string {
 	return b.aggregateID
 }

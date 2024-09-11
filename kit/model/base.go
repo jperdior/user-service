@@ -34,3 +34,7 @@ func (a *BaseAggregate) PullEvents() []event.Event {
 	a.events = []event.Event{}
 	return events
 }
+
+func (a *BaseAggregate) Record(event event.Event) {
+	a.events = append(a.events, event)
+}
