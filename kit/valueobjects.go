@@ -1,51 +1,69 @@
 package kit
 
 import (
+	"database/sql/driver"
 	"errors"
+	"fmt"
 	"github.com/google/uuid"
 	"regexp"
 )
 
 // EmailValueObject represents a value object for emails
-type EmailValueObject struct {
-	value string
-}
+type EmailValueObject string
 
 func NewEmailValueObject(value string) (EmailValueObject, error) {
-	err := validateValue(value)
-	if err != nil {
-		return EmailValueObject{}, err
-	}
-	return EmailValueObject{value: value}, nil
-}
-
-func validateValue(value string) error {
-	// Regular expression for basic email validation
 	const emailRegex = `^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$`
 	re := regexp.MustCompile(emailRegex)
 	if !re.MatchString(value) {
-		return errors.New("invalid email format")
+		return "", errors.New("invalid email format")
 	}
-	return nil
+	return EmailValueObject(value), nil
 }
 
-func (e EmailValueObject) Value() string {
-	return e.value
+func (emailValueObject *EmailValueObject) Value() string {
+	return string(*emailValueObject)
 }
 
 // UuidValueObject represents a value object for UUIDs
-type UuidValueObject struct {
-	value uuid.UUID
-}
+type UuidValueObject uuid.UUID
 
 func NewUuidValueObject(value string) (UuidValueObject, error) {
 	uid, err := uuid.Parse(value)
 	if err != nil {
 		return UuidValueObject{}, err
 	}
-	return UuidValueObject{value: uid}, nil
+	return UuidValueObject(uid), nil
 }
 
-func (u UuidValueObject) Value() uuid.UUID {
-	return u.value
+func (uidValueObject *UuidValueObject) Scan(value interface{}) error {
+	if value == nil {
+		*uidValueObject = UuidValueObject{} // If value is nil, set it to the zero value
+		return nil
+	}
+
+	bytes, ok := value.([]byte)
+	if !ok {
+		return fmt.Errorf("failed to scan UUID: expected []byte but got %T", value)
+	}
+
+	parsedUUID, err := uuid.FromBytes(bytes)
+	if err != nil {
+		return fmt.Errorf("failed to parse UUID from bytes: %w", err)
+	}
+
+	*uidValueObject = UuidValueObject(parsedUUID)
+	return nil
+}
+
+func (uidValueObject *UuidValueObject) Value() (driver.Value, error) {
+	return uuid.UUID(*uidValueObject).MarshalBinary()
+}
+
+func (uidValueObject *UuidValueObject) String() string {
+	return uuid.UUID(*uidValueObject).String()
+}
+
+func (uidValueObject *UuidValueObject) Bytes() []byte {
+	bytes, _ := uuid.UUID(*uidValueObject).MarshalBinary()
+	return bytes
 }
