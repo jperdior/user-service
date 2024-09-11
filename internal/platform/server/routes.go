@@ -4,6 +4,7 @@ import (
 	swaggerFiles "github.com/swaggo/files"
 	ginSwagger "github.com/swaggo/gin-swagger"
 	"user-service/internal/platform/server/handler/status"
+	"user-service/internal/user/presentation"
 )
 
 // @title           Golang Template API
@@ -30,6 +31,7 @@ func (s *Server) registerRoutes() {
 	api := s.engine.Group("/api/v1")
 	{
 		api.GET("/status", status.StatusHandler())
+		api.POST("/register", presentation.RegisterUserHandler(s.userService))
 	}
 
 	s.engine.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
