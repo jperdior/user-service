@@ -1,8 +1,10 @@
-# Boilerplate for a DDD module in Golang
+# User service in DDD made with Golang
 
 ![test workflow](https://github.com/jperdior/user-service/actions/workflows/test.yml/badge.svg)
 
-This is a boilerplate for a Domain-Driven Design module in Golang using gin-gonic.
+This is a self learning project to implement a User service in Domain-Driven Design using Golang. It's also my intention to even be able to use it in future projects.
+
+I am creating issues to guide the development of this project, so if you want to contribute, feel free to take a look at the issues or contribute with your own ideas.
 
 ## Requirements
 
