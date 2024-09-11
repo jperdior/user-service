@@ -49,3 +49,16 @@ To run the analysis, you can use the following command:
 ```bash
 make analysis
 ```
+To view the API documentation you can run the following command:
+
+```bash
+make open-docs
+```
+
+## Developing new endpoints
+
+To refresh the openapi documentation you can run the following command:
+
+```bash
+make refresh-openapi
+```
