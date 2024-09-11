@@ -1,8 +1,8 @@
 package model
 
 import (
-	"github.com/google/uuid"
 	"time"
+	"user-service/kit"
 	"user-service/kit/event"
 )
 
@@ -12,14 +12,10 @@ type Base struct {
 	UpdatedAt time.Time `json:"updated_at"`
 }
 
-func NewBase(uid uuid.UUID) (*Base, error) {
-	id, err := uid.MarshalBinary() // Generates binary UUID
-	if err != nil {
-		return nil, err
-	}
+func NewBase(id kit.UuidValueObject) (*Base, error) {
 	currentTime := time.Now()
 	return &Base{
-		ID:        id,
+		ID:        id.Bytes(),
 		CreatedAt: currentTime,
 		UpdatedAt: currentTime,
 	}, nil

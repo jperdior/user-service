@@ -56,6 +56,7 @@ func TestRegisterUserHandler(t *testing.T) {
 			Email:    email,
 			Name:     "Test User",
 			Password: "password",
+			Roles:    domain.UserRoles{domain.RoleUser},
 		}
 		if err := db.Create(&user).Error; err != nil {
 			t.Fatalf("Failed to insert user fixture: %v", err)
