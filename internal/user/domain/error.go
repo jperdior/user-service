@@ -28,3 +28,11 @@ func NewInvalidIDError() *kit.DomainError {
 		"user.register.invalid_id",
 		http.StatusBadRequest)
 }
+
+// NewInvalidCredentialsError creates a new InvalidCredentialsError.
+func NewInvalidCredentialsError() *kit.DomainError {
+	return kit.NewDomainError(
+		"Invalid credentials",
+		"user.login.invalid_credentials",
+		http.StatusUnauthorized)
+}

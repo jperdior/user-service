@@ -7,7 +7,9 @@ import (
 	"user-service/internal/platform/bus/inmemory"
 	"user-service/internal/platform/database/mysql"
 	"user-service/internal/platform/server"
-	"user-service/internal/user/application"
+	"user-service/internal/platform/token"
+	"user-service/internal/user/application/login"
+	"user-service/internal/user/application/register"
 	"user-service/internal/user/infrastructure"
 )
 
@@ -20,11 +22,13 @@ func Run() error {
 	}
 
 	var (
-		commandBus     = inmemory.NewCommandBus()
-		queryBus       = inmemory.NewQueryBus()
-		eventBus       = inmemory.NewEventBus()
-		userRepository = infrastructure.NewUserRepository(mysql.DB)
-		userService    = application.NewUserService(userRepository)
+		commandBus      = inmemory.NewCommandBus()
+		queryBus        = inmemory.NewQueryBus()
+		eventBus        = inmemory.NewEventBus()
+		tokenService    = token.NewJwtService(cfg.JwtSecret, cfg.JwtExpiration)
+		userRepository  = infrastructure.NewUserRepository(mysql.DB)
+		registerService = register.NewUserRegisterService(userRepository)
+		loginService    = login.NewUserLoginService(userRepository, tokenService)
 	)
 
 	ctx, srv := server.New(
@@ -35,7 +39,9 @@ func Run() error {
 		commandBus,
 		queryBus,
 		eventBus,
-		userService)
+		registerService,
+		loginService,
+	)
 	return srv.Run(ctx)
 }
 
@@ -44,4 +50,8 @@ type config struct {
 	Host            string        `default:""`
 	Port            uint          `default:"9091"`
 	ShutdownTimeout time.Duration `default:"10s"`
+
+	// JWT configuration
+	JwtSecret     string `required:"true"`
+	JwtExpiration int    `default:"15"`
 }

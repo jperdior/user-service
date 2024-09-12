@@ -4,7 +4,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"net/http"
 	"time"
-	"user-service/internal/user/application"
+	"user-service/internal/user/application/register"
 )
 
 type registerUserRequest struct {
@@ -34,7 +34,7 @@ type UserResponse struct {
 // @Failure 500 {object} map[string]string "Internal server error" example {"error": "internal server error"}
 // @Router /register [post]
 // @Tags user
-func RegisterUserHandler(service *application.UserService) gin.HandlerFunc {
+func RegisterUserHandler(service *register.UserRegisterService) gin.HandlerFunc {
 	return func(context *gin.Context) {
 		var request registerUserRequest
 		if err := context.ShouldBindJSON(&request); err != nil {

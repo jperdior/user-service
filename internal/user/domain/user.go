@@ -3,6 +3,7 @@ package domain
 import (
 	"crypto/rand"
 	"fmt"
+	"github.com/google/uuid"
 	"golang.org/x/crypto/bcrypt"
 	"time"
 	"user-service/kit"
@@ -25,7 +26,6 @@ type User struct {
 	ResetToken    string
 	ResetTokenExp time.Time
 	Active        bool
-	Tokens        []UserToken
 	Roles         UserRoles `gorm:"serializer:json"`
 }
 
@@ -47,12 +47,12 @@ func NewUser(uid kit.UuidValueObject, name string, email kit.EmailValueObject, p
 	return user, nil
 }
 
-type UserToken struct {
-	model.Base
-	UserID    []byte `gorm:"type:binary(16);index"` // Foreign key to the User
-	Token     string `gorm:"unique"`                // JWT token
-	Device    string // Optional: to track which device the token belongs to
-	ExpiresAt time.Time
+func (u *User) GetID() string {
+	uid, err := uuid.FromBytes(u.Base.ID)
+	if err != nil {
+		return ""
+	}
+	return uid.String()
 }
 
 func hashPassword(password string) (string, error) {
@@ -61,12 +61,6 @@ func hashPassword(password string) (string, error) {
 		return "", err
 	}
 	return string(hashedPassword), nil
-}
-
-// todo: MOVE TO A SERVICE
-func CheckPasswordHash(password, hash string) bool {
-	err := bcrypt.CompareHashAndPassword([]byte(hash), []byte(password))
-	return err == nil
 }
 
 func GenerateResetToken() (string, error) {

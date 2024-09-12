@@ -3,67 +3,30 @@ package presentation
 import (
 	"bytes"
 	"encoding/json"
-	"github.com/google/uuid"
+	"github.com/gin-gonic/gin"
+	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/mock"
 	"github.com/stretchr/testify/require"
 	"net/http"
 	"net/http/httptest"
 	"testing"
-	"user-service/internal/user/application"
-	"user-service/kit/model"
-
-	"github.com/gin-gonic/gin"
-	"github.com/stretchr/testify/assert"
-	"gorm.io/driver/sqlite"
-	"gorm.io/gorm"
+	"user-service/internal/user/application/register"
 	"user-service/internal/user/domain"
-	"user-service/internal/user/infrastructure"
+	"user-service/internal/user/domain/domainmocks"
 )
 
-func setupTestRouter(db *gorm.DB) *gin.Engine {
+func TestRegisterUserHandler(t *testing.T) {
+	repo := new(domainmocks.UserRepository)
 	gin.SetMode(gin.TestMode)
 	router := gin.Default()
 
-	userRepo := infrastructure.NewUserRepository(db)
-	userService := application.NewUserService(userRepo)
+	userService := register.NewUserRegisterService(repo)
 	router.POST("/register", RegisterUserHandler(userService))
 
-	return router
-}
-
-func setupTestDB() *gorm.DB {
-	db, err := gorm.Open(sqlite.Open(":memory:"), &gorm.Config{})
-	if err != nil {
-		panic("failed to connect database")
-	}
-	err = db.AutoMigrate(&domain.User{})
-	if err != nil {
-		return nil
-	}
-	return db
-}
-
-func TestRegisterUserHandler(t *testing.T) {
-	db := setupTestDB()
-	router := setupTestRouter(db)
-
-	insertUserFixture := func(email string) {
-		id, _ := uuid.New().MarshalBinary()
-		// Prepare the test user
-		user := &domain.User{
-			Base: model.Base{
-				ID: id,
-			},
-			Email:    email,
-			Name:     "Test User",
-			Password: "password",
-			Roles:    domain.UserRoles{domain.RoleUser},
-		}
-		if err := db.Create(&user).Error; err != nil {
-			t.Fatalf("Failed to insert user fixture: %v", err)
-		}
-	}
-
 	t.Run("given a valid request it returns 201", func(t *testing.T) {
+
+		repo.On("FindByEmail", "jlp@federation.com").Return(nil, nil)
+		repo.On("Save", mock.Anything).Return(nil)
 
 		// Define the request payload
 		payload := map[string]string{
@@ -93,13 +56,6 @@ func TestRegisterUserHandler(t *testing.T) {
 		assert.Equal(t, payload["id"], response.ID)
 		assert.Equal(t, payload["name"], response.Name)
 		assert.Equal(t, payload["email"], response.Email)
-
-		// Check if the user is in the database
-		var user domain.User
-		err = db.First(&user, "email = ?", payload["email"]).Error
-		require.NoError(t, err)
-		assert.Equal(t, payload["name"], user.Name)
-		assert.Equal(t, payload["email"], user.Email)
 	})
 
 	t.Run("given an invalid request it returns 400", func(t *testing.T) {
@@ -127,8 +83,8 @@ func TestRegisterUserHandler(t *testing.T) {
 	})
 
 	t.Run("given an existing user it returns 400", func(t *testing.T) {
-		// arrange
-		insertUserFixture("first@federation.com")
+
+		repo.On("FindByEmail", "first@federation.com").Return(&domain.User{}, nil)
 
 		// Define the request payload
 		payload := map[string]string{
