@@ -46,6 +46,56 @@ info:
   title: Golang Template API
   version: "1.0"
 paths:
+  /login:
+    post:
+      consumes:
+      - application/x-www-form-urlencoded
+      description: Authenticates a user and returns a JWT token if credentials are
+        valid
+      parameters:
+      - description: User email
+        example: jlp@federation.com
+        in: formData
+        name: email
+        required: true
+        type: string
+      - description: User password
+        example: enterprise
+        in: formData
+        name: password
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 'Token generated successfully" example({"token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."})'
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "400":
+          description: 'Invalid input" example({"error": "invalid input"})'
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "401":
+          description: 'Invalid credentials" example({"error": "invalid credentials"})'
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: 'Internal server error" example({"error": "internal server
+            error"})'
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Authenticates a user with the provided email and password
+      tags:
+      - user
   /register:
     post:
       consumes:

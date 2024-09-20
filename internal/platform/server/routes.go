@@ -31,7 +31,8 @@ func (s *Server) registerRoutes() {
 	api := s.engine.Group("/api/v1")
 	{
 		api.GET("/status", status.StatusHandler())
-		api.POST("/register", presentation.RegisterUserHandler(s.userService))
+		api.POST("/register", presentation.RegisterUserHandler(s.registerService))
+		api.POST("/login", presentation.LoginUserHandler(s.loginService))
 	}
 
 	s.engine.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))

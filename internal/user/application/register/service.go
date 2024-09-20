@@ -1,4 +1,4 @@
-package application
+package register
 
 import (
 	"errors"
@@ -9,16 +9,16 @@ import (
 	"user-service/kit"
 )
 
-type UserService struct {
+type UserRegisterService struct {
 	userRepository domain.UserRepository
 }
 
-func NewUserService(repo domain.UserRepository) *UserService {
-	return &UserService{userRepository: repo}
+func NewUserRegisterService(repo domain.UserRepository) *UserRegisterService {
+	return &UserRegisterService{userRepository: repo}
 }
 
 // RegisterUser handles the registration logic
-func (s *UserService) RegisterUser(id, name, email, password string) (*domain.User, *kit.DomainError) {
+func (s *UserRegisterService) RegisterUser(id, name, email, password string) (*domain.User, *kit.DomainError) {
 	uidValueObject, err := kit.NewUuidValueObject(id)
 	if err != nil {
 		log.Println(err)
