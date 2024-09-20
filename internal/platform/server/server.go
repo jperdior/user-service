@@ -16,6 +16,12 @@ import (
 	"user-service/kit/query"
 )
 
+type ServerConfig struct {
+	Host            string        `default:""`
+	Port            uint          `default:"9091"`
+	ShutdownTimeout time.Duration `default:"10s"`
+}
+
 type Server struct {
 	httpAddr string
 	engine   *gin.Engine
@@ -32,9 +38,7 @@ type Server struct {
 
 func New(
 	ctx context.Context,
-	host string,
-	port uint,
-	shutdownTimeout time.Duration,
+	config ServerConfig,
 	commandBus command.Bus,
 	queryBus query.Bus,
 	eventBus event.Bus,
@@ -42,10 +46,10 @@ func New(
 	loginService *login.UserLoginService,
 ) (context.Context, Server) {
 	srv := Server{
-		httpAddr: fmt.Sprintf("%s:%d", host, port),
+		httpAddr: fmt.Sprintf("%s:%d", config.Host, config.Port),
 		engine:   gin.Default(),
 
-		shutdownTimeout: shutdownTimeout,
+		shutdownTimeout: config.ShutdownTimeout,
 
 		//deps
 		commandBus:      commandBus,
