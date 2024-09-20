@@ -21,6 +21,7 @@ func (s *JWTService) GenerateToken(user *domain.User) (string, error) {
 		"uid":   user.GetID(),
 		"roles": user.Roles,
 		"iss":   "user-service",
+		"iat":   time.Now().Unix(),
 		"exp":   time.Now().Add(duration).Unix(),
 	}
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)

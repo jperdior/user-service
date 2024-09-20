@@ -12,7 +12,7 @@ import (
 
 const (
 	RoleUser       = "ROLE_USER"
-	RoleSuperAdmin = "ROLE_ADMIN"
+	RoleSuperAdmin = "ROLE_SUPER_ADMIN"
 )
 
 type UserRoles []string
