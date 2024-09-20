@@ -13,17 +13,15 @@ type ForgotPasswordResponse struct {
 	Message string `json:"message"`
 }
 
-// ForgotPasswordHandler is a handler to recover a user's password
-// @Summary Sends a password recovery email to the user
-// @Schemes
-// @Description Sends a password recovery email to the user
+// ForgotPasswordHandler handles the password recovery process for a user
+// @Summary Send password recovery email
+// @Description Sends a password recovery email to the user if the provided email exists in the system
 // @Accept  json
 // @Produce json
-// @Param   login body      login.ForgotPasswordRequest  true  "Login request body"
-// @Success 200 {object} map[string]string "Token generated successfully" example({"token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."})
-// @Failure 400 {object} map[string]string "Invalid input" example({"error": "invalid input"})
-// @Failure 401 {object} map[string]string "Invalid credentials" example({"error": "invalid credentials"})
-// @Failure 500 {object} map[string]string "Internal server error" example({"error": "internal server error"})
+// @Param   forgotPasswordRequest body ForgotPasswordRequest true "Forgot password request body"
+// @Success 200 {object} ForgotPasswordResponse "Password recovery email sent"
+// @Failure 400 {object} kit.ErrorResponse "Invalid input"
+// @Failure 500 {object} kit.ErrorResponse "Internal server error"
 // @Router /forgot-password [post]
 // @Tags user
 func ForgotPasswordHandler(service *forgot_password.ForgotPasswordService) gin.HandlerFunc {

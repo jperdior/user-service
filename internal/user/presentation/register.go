@@ -30,8 +30,11 @@ type UserResponse struct {
 // @Produce json
 // @Param request body registerUserRequest true "User registration details" example({ "id": "6d0f12c8-9fe9-4506-ad59-d386adbbe5c0", "name": "Jean Luc Picard", "email": "jlp@federation.com", "password": "enterprise" })
 // @Success 201 {object} UserResponse "User registered successfully"
-// @Failure 400 {object} map[string]string "Invalid input" example {"error": "invalid input"}
-// @Failure 500 {object} map[string]string "Internal server error" example {"error": "internal server error"}
+// @Failure 400 {object} kit.ErrorResponse "Invalid input" example {"error": "invalid input"}
+// @Failure 500 {object} kit.ErrorResponse "Internal server error" example {"error": "internal server error"}
+// @Example request { "id": "6d0f12c8-9fe9-4506-ad59-d386adbbe5c0", "name": "Jean Luc Picard", "email": "jlp@federation.com", "password": "enterprise" }
+// @Example 400 { "error": "invalid input" }
+// @Example 500 { "error": "internal server error" }
 // @Router /register [post]
 // @Tags user
 func RegisterUserHandler(service *register.UserRegisterService) gin.HandlerFunc {

@@ -1,5 +1,37 @@
 basePath: /api/v1
 definitions:
+  kit.ErrorResponse:
+    properties:
+      error:
+        type: string
+    type: object
+  presentation.ForgotPasswordRequest:
+    properties:
+      email:
+        type: string
+    required:
+    - email
+    type: object
+  presentation.ForgotPasswordResponse:
+    properties:
+      message:
+        type: string
+    type: object
+  presentation.LoginRequest:
+    properties:
+      email:
+        type: string
+      password:
+        type: string
+    required:
+    - email
+    - password
+    type: object
+  presentation.LoginResponse:
+    properties:
+      token:
+        type: string
+    type: object
   presentation.UserResponse:
     properties:
       created_at:
@@ -46,53 +78,69 @@ info:
   title: Golang Template API
   version: "1.0"
 paths:
-  /login:
+  /forgot-password:
     post:
       consumes:
-      - application/x-www-form-urlencoded
-      description: Authenticates a user and returns a JWT token if credentials are
-        valid
+      - application/json
+      description: Sends a password recovery email to the user if the provided email
+        exists in the system
       parameters:
-      - description: User email
-        example: jlp@federation.com
-        in: formData
-        name: email
+      - description: Forgot password request body
+        in: body
+        name: forgotPasswordRequest
         required: true
-        type: string
-      - description: User password
-        example: enterprise
-        in: formData
-        name: password
-        required: true
-        type: string
+        schema:
+          $ref: '#/definitions/presentation.ForgotPasswordRequest'
       produces:
       - application/json
       responses:
         "200":
-          description: 'Token generated successfully" example({"token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."})'
+          description: Password recovery email sent
           schema:
-            additionalProperties:
-              type: string
-            type: object
+            $ref: '#/definitions/presentation.ForgotPasswordResponse'
         "400":
-          description: 'Invalid input" example({"error": "invalid input"})'
+          description: Invalid input
           schema:
-            additionalProperties:
-              type: string
-            type: object
-        "401":
-          description: 'Invalid credentials" example({"error": "invalid credentials"})'
-          schema:
-            additionalProperties:
-              type: string
-            type: object
+            $ref: '#/definitions/kit.ErrorResponse'
         "500":
-          description: 'Internal server error" example({"error": "internal server
-            error"})'
+          description: Internal server error
           schema:
-            additionalProperties:
-              type: string
-            type: object
+            $ref: '#/definitions/kit.ErrorResponse'
+      summary: Send password recovery email
+      tags:
+      - user
+  /login:
+    post:
+      consumes:
+      - application/json
+      description: Authenticates a user and returns a JWT token if credentials are
+        valid
+      parameters:
+      - description: Login request body
+        in: body
+        name: login
+        required: true
+        schema:
+          $ref: '#/definitions/presentation.LoginRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: token
+          schema:
+            $ref: '#/definitions/presentation.LoginResponse'
+        "400":
+          description: Invalid input
+          schema:
+            $ref: '#/definitions/kit.ErrorResponse'
+        "401":
+          description: Invalid credentials
+          schema:
+            $ref: '#/definitions/kit.ErrorResponse'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/kit.ErrorResponse'
       summary: Authenticates a user with the provided email and password
       tags:
       - user
@@ -118,16 +166,12 @@ paths:
         "400":
           description: 'Invalid input" example {"error": "invalid input"}'
           schema:
-            additionalProperties:
-              type: string
-            type: object
+            $ref: '#/definitions/kit.ErrorResponse'
         "500":
           description: 'Internal server error" example {"error": "internal server
             error"}'
           schema:
-            additionalProperties:
-              type: string
-            type: object
+            $ref: '#/definitions/kit.ErrorResponse'
       summary: Registers a new user
       tags:
       - user

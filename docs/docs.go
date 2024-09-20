@@ -24,11 +24,57 @@ const docTemplate = `{
     "host": "{{.Host}}",
     "basePath": "{{.BasePath}}",
     "paths": {
+        "/forgot-password": {
+            "post": {
+                "description": "Sends a password recovery email to the user if the provided email exists in the system",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "user"
+                ],
+                "summary": "Send password recovery email",
+                "parameters": [
+                    {
+                        "description": "Forgot password request body",
+                        "name": "forgotPasswordRequest",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/presentation.ForgotPasswordRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Password recovery email sent",
+                        "schema": {
+                            "$ref": "#/definitions/presentation.ForgotPasswordResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Invalid input",
+                        "schema": {
+                            "$ref": "#/definitions/kit.ErrorResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal server error",
+                        "schema": {
+                            "$ref": "#/definitions/kit.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
         "/login": {
             "post": {
                 "description": "Authenticates a user and returns a JWT token if credentials are valid",
                 "consumes": [
-                    "application/x-www-form-urlencoded"
+                    "application/json"
                 ],
                 "produces": [
                     "application/json"
@@ -39,57 +85,38 @@ const docTemplate = `{
                 "summary": "Authenticates a user with the provided email and password",
                 "parameters": [
                     {
-                        "type": "string",
-                        "example": "jlp@federation.com",
-                        "description": "User email",
-                        "name": "email",
-                        "in": "formData",
-                        "required": true
-                    },
-                    {
-                        "type": "string",
-                        "example": "enterprise",
-                        "description": "User password",
-                        "name": "password",
-                        "in": "formData",
-                        "required": true
+                        "description": "Login request body",
+                        "name": "login",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/presentation.LoginRequest"
+                        }
                     }
                 ],
                 "responses": {
                     "200": {
-                        "description": "Token generated successfully\" example({\"token\": \"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...\"})",
+                        "description": "token",
                         "schema": {
-                            "type": "object",
-                            "additionalProperties": {
-                                "type": "string"
-                            }
+                            "$ref": "#/definitions/presentation.LoginResponse"
                         }
                     },
                     "400": {
-                        "description": "Invalid input\" example({\"error\": \"invalid input\"})",
+                        "description": "Invalid input",
                         "schema": {
-                            "type": "object",
-                            "additionalProperties": {
-                                "type": "string"
-                            }
+                            "$ref": "#/definitions/kit.ErrorResponse"
                         }
                     },
                     "401": {
-                        "description": "Invalid credentials\" example({\"error\": \"invalid credentials\"})",
+                        "description": "Invalid credentials",
                         "schema": {
-                            "type": "object",
-                            "additionalProperties": {
-                                "type": "string"
-                            }
+                            "$ref": "#/definitions/kit.ErrorResponse"
                         }
                     },
                     "500": {
-                        "description": "Internal server error\" example({\"error\": \"internal server error\"})",
+                        "description": "Internal server error",
                         "schema": {
-                            "type": "object",
-                            "additionalProperties": {
-                                "type": "string"
-                            }
+                            "$ref": "#/definitions/kit.ErrorResponse"
                         }
                     }
                 }
@@ -129,19 +156,13 @@ const docTemplate = `{
                     "400": {
                         "description": "Invalid input\" example {\"error\": \"invalid input\"}",
                         "schema": {
-                            "type": "object",
-                            "additionalProperties": {
-                                "type": "string"
-                            }
+                            "$ref": "#/definitions/kit.ErrorResponse"
                         }
                     },
                     "500": {
                         "description": "Internal server error\" example {\"error\": \"internal server error\"}",
                         "schema": {
-                            "type": "object",
-                            "additionalProperties": {
-                                "type": "string"
-                            }
+                            "$ref": "#/definitions/kit.ErrorResponse"
                         }
                     }
                 }
@@ -163,6 +184,56 @@ const docTemplate = `{
         }
     },
     "definitions": {
+        "kit.ErrorResponse": {
+            "type": "object",
+            "properties": {
+                "error": {
+                    "type": "string"
+                }
+            }
+        },
+        "presentation.ForgotPasswordRequest": {
+            "type": "object",
+            "required": [
+                "email"
+            ],
+            "properties": {
+                "email": {
+                    "type": "string"
+                }
+            }
+        },
+        "presentation.ForgotPasswordResponse": {
+            "type": "object",
+            "properties": {
+                "message": {
+                    "type": "string"
+                }
+            }
+        },
+        "presentation.LoginRequest": {
+            "type": "object",
+            "required": [
+                "email",
+                "password"
+            ],
+            "properties": {
+                "email": {
+                    "type": "string"
+                },
+                "password": {
+                    "type": "string"
+                }
+            }
+        },
+        "presentation.LoginResponse": {
+            "type": "object",
+            "properties": {
+                "token": {
+                    "type": "string"
+                }
+            }
+        },
         "presentation.UserResponse": {
             "type": "object",
             "properties": {
