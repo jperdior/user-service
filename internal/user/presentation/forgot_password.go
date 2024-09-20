@@ -1,6 +1,9 @@
 package presentation
 
-import "github.com/gin-gonic/gin"
+import (
+	"github.com/gin-gonic/gin"
+	"user-service/internal/user/application/forgot_password"
+)
 
 type ForgotPasswordRequest struct {
 	Email string `json:"email" binding:"required,email"`
@@ -23,7 +26,7 @@ type ForgotPasswordResponse struct {
 // @Failure 500 {object} map[string]string "Internal server error" example({"error": "internal server error"})
 // @Router /forgot-password [post]
 // @Tags user
-func ForgotPasswordHandler() gin.HandlerFunc {
+func ForgotPasswordHandler(service *forgot_password.ForgotPasswordService) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		var req ForgotPasswordRequest
 
@@ -33,12 +36,10 @@ func ForgotPasswordHandler() gin.HandlerFunc {
 			return
 		}
 
-		// Call login service with email and password
-		// token, err := service.Login(req.Email, req.Password)
-		// if err != nil {
-		// 	c.JSON(err.Code, gin.H{"error": err.Error()})
-		// 	return
-		// }
+		err := service.SendResetPasswordEmail(req.Email)
+		if err != nil {
+			c.JSON(err.Code, gin.H{"error": err.Error()})
+		}
 
 		c.JSON(200, ForgotPasswordResponse{Message: "Password recovery email sent"})
 	}

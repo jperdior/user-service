@@ -33,6 +33,7 @@ func (s *Server) registerRoutes() {
 		api.GET("/status", status.StatusHandler())
 		api.POST("/register", presentation.RegisterUserHandler(s.registerService))
 		api.POST("/login", presentation.LoginUserHandler(s.loginService))
+		api.POST("/forgot-password", presentation.ForgotPasswordHandler(s.forgotPasswordService))
 	}
 
 	s.engine.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))

@@ -36,3 +36,11 @@ func NewInvalidCredentialsError() *kit.DomainError {
 		"user.login.invalid_credentials",
 		http.StatusUnauthorized)
 }
+
+// NewUserNotFoundError creates a new UserNotFoundError.
+func NewUserNotFoundError() *kit.DomainError {
+	return kit.NewDomainError(
+		"User not found",
+		"user.forgot_password.user_not_found",
+		http.StatusNotFound)
+}

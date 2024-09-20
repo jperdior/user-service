@@ -9,6 +9,7 @@ import (
 	"user-service/internal/platform/mailer"
 	"user-service/internal/platform/server"
 	"user-service/internal/platform/token"
+	"user-service/internal/user/application/forgot_password"
 	"user-service/internal/user/application/login"
 	"user-service/internal/user/application/register"
 	"user-service/internal/user/infrastructure"
@@ -38,13 +39,15 @@ func Run() error {
 	})
 
 	var (
-		commandBus      = inmemory.NewCommandBus()
-		queryBus        = inmemory.NewQueryBus()
-		eventBus        = inmemory.NewEventBus()
-		tokenService    = token.NewJwtService(cfg.JwtSecret, cfg.JwtExpiration)
-		userRepository  = infrastructure.NewUserRepository(mysql.DB)
-		registerService = register.NewUserRegisterService(userRepository)
-		loginService    = login.NewUserLoginService(userRepository, tokenService)
+		commandBus            = inmemory.NewCommandBus()
+		queryBus              = inmemory.NewQueryBus()
+		eventBus              = inmemory.NewEventBus()
+		tokenService          = token.NewJwtService(cfg.JwtSecret, cfg.JwtExpiration)
+		userRepository        = infrastructure.NewUserRepository(mysql.DB)
+		registerService       = register.NewUserRegisterService(userRepository)
+		loginService          = login.NewUserLoginService(userRepository, tokenService)
+		emailService          = infrastructure.NewEmailServiceImpl(mailer.MAILER)
+		forgotPasswordService = forgot_password.NewForgotPasswordService(userRepository, emailService)
 	)
 
 	ctx, srv := server.New(
@@ -59,6 +62,7 @@ func Run() error {
 		eventBus,
 		registerService,
 		loginService,
+		forgotPasswordService,
 	)
 	return srv.Run(ctx)
 }

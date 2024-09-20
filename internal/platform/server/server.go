@@ -9,6 +9,7 @@ import (
 	"os"
 	"os/signal"
 	"time"
+	"user-service/internal/user/application/forgot_password"
 	"user-service/internal/user/application/login"
 	"user-service/internal/user/application/register"
 	"user-service/kit/command"
@@ -29,11 +30,12 @@ type Server struct {
 	shutdownTimeout time.Duration
 
 	//deps
-	commandBus      command.Bus
-	queryBus        query.Bus
-	eventBus        event.Bus
-	registerService *register.UserRegisterService
-	loginService    *login.UserLoginService
+	commandBus            command.Bus
+	queryBus              query.Bus
+	eventBus              event.Bus
+	registerService       *register.UserRegisterService
+	loginService          *login.UserLoginService
+	forgotPasswordService *forgot_password.ForgotPasswordService
 }
 
 func New(
@@ -44,6 +46,7 @@ func New(
 	eventBus event.Bus,
 	registerService *register.UserRegisterService,
 	loginService *login.UserLoginService,
+	forgotPasswordService *forgot_password.ForgotPasswordService,
 ) (context.Context, Server) {
 	srv := Server{
 		httpAddr: fmt.Sprintf("%s:%d", config.Host, config.Port),
@@ -52,11 +55,12 @@ func New(
 		shutdownTimeout: config.ShutdownTimeout,
 
 		//deps
-		commandBus:      commandBus,
-		queryBus:        queryBus,
-		eventBus:        eventBus,
-		registerService: registerService,
-		loginService:    loginService,
+		commandBus:            commandBus,
+		queryBus:              queryBus,
+		eventBus:              eventBus,
+		registerService:       registerService,
+		loginService:          loginService,
+		forgotPasswordService: forgotPasswordService,
 	}
 
 	srv.registerRoutes()
