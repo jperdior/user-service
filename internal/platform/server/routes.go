@@ -1,11 +1,12 @@
 package server
 
 import (
-	swaggerFiles "github.com/swaggo/files"
-	ginSwagger "github.com/swaggo/gin-swagger"
 	"user-service/internal/platform/server/handler/status"
 	"user-service/internal/platform/server/middleware/auth"
 	"user-service/internal/user/presentation"
+
+	swaggerFiles "github.com/swaggo/files"
+	ginSwagger "github.com/swaggo/gin-swagger"
 )
 
 // @title           Golang Template API
@@ -23,7 +24,10 @@ import (
 // @host      localhost:9091
 // @BasePath  /api/v1
 
-// @securityDefinitions.basic  BasicAuth
+// @securityDefinitions.bearerAuth  BearerAuth
+// @securityDefinitions.bearerAuth.type  apiKey
+// @securityDefinitions.bearerAuth.name  Authorization
+// @securityDefinitions.bearerAuth.in    header
 
 // @externalDocs.description  OpenAPI
 // @externalDocs.url          https://swagger.io/resources/open-api/
