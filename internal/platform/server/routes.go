@@ -4,6 +4,7 @@ import (
 	swaggerFiles "github.com/swaggo/files"
 	ginSwagger "github.com/swaggo/gin-swagger"
 	"user-service/internal/platform/server/handler/status"
+	"user-service/internal/platform/server/middleware/auth"
 	"user-service/internal/user/presentation"
 )
 
@@ -35,6 +36,10 @@ func (s *Server) registerRoutes() {
 		api.POST("/login", presentation.LoginUserHandler(s.loginService))
 		api.POST("/forgot-password", presentation.ForgotPasswordHandler(s.forgotPasswordService))
 	}
+
+	protected := api.Group("")
+	protected.Use(auth.JWTMiddleware(s.config.JwtSecret))
+	protected.GET("/user/:uuid", presentation.GetUserHandler(s.queryBus))
 
 	s.engine.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 }

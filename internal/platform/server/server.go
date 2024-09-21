@@ -21,18 +21,17 @@ type ServerConfig struct {
 	Host            string        `default:""`
 	Port            uint          `default:"9091"`
 	ShutdownTimeout time.Duration `default:"10s"`
+	JwtSecret       string        `default:""`
 }
 
 type Server struct {
-	httpAddr string
-	engine   *gin.Engine
-
-	shutdownTimeout time.Duration
-
+	config ServerConfig
+	engine *gin.Engine
 	//deps
-	commandBus            command.Bus
-	queryBus              query.Bus
-	eventBus              event.Bus
+	commandBus command.Bus
+	queryBus   query.Bus
+	eventBus   event.Bus
+	//services
 	registerService       *register.UserRegisterService
 	loginService          *login.UserLoginService
 	forgotPasswordService *forgot_password.ForgotPasswordService
@@ -49,15 +48,15 @@ func New(
 	forgotPasswordService *forgot_password.ForgotPasswordService,
 ) (context.Context, Server) {
 	srv := Server{
-		httpAddr: fmt.Sprintf("%s:%d", config.Host, config.Port),
-		engine:   gin.Default(),
-
-		shutdownTimeout: config.ShutdownTimeout,
+		config: config,
+		engine: gin.Default(),
 
 		//deps
-		commandBus:            commandBus,
-		queryBus:              queryBus,
-		eventBus:              eventBus,
+		commandBus: commandBus,
+		queryBus:   queryBus,
+		eventBus:   eventBus,
+
+		//services
 		registerService:       registerService,
 		loginService:          loginService,
 		forgotPasswordService: forgotPasswordService,
@@ -69,10 +68,11 @@ func New(
 }
 
 func (s *Server) Run(ctx context.Context) error {
-	log.Println("Server running on", s.httpAddr)
+	httpAddr := fmt.Sprintf("%s:%d", s.config.Host, s.config.Port)
+	log.Println("Server running on", httpAddr)
 
 	srv := &http.Server{
-		Addr:    s.httpAddr,
+		Addr:    httpAddr,
 		Handler: s.engine,
 	}
 
@@ -83,7 +83,7 @@ func (s *Server) Run(ctx context.Context) error {
 	}()
 
 	<-ctx.Done()
-	ctxShutDown, cancel := context.WithTimeout(context.Background(), s.shutdownTimeout)
+	ctxShutDown, cancel := context.WithTimeout(context.Background(), s.config.ShutdownTimeout)
 	defer cancel()
 
 	return srv.Shutdown(ctxShutDown)

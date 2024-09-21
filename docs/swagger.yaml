@@ -17,6 +17,13 @@ definitions:
       message:
         type: string
     type: object
+  presentation.GetUserResponse:
+    properties:
+      email:
+        type: string
+      id:
+        type: string
+    type: object
   presentation.LoginRequest:
     properties:
       email:
@@ -184,6 +191,41 @@ paths:
           schema:
             type: string
       summary: Provides the status of the service
+  /user/{uuid}:
+    get:
+      consumes:
+      - application/json
+      description: Retrieves a user by their UUID
+      parameters:
+      - description: User UUID
+        in: path
+        name: uuid
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: User found
+          schema:
+            $ref: '#/definitions/presentation.GetUserResponse'
+        "400":
+          description: Invalid UUID
+          schema:
+            $ref: '#/definitions/kit.ErrorResponse'
+        "404":
+          description: User not found
+          schema:
+            $ref: '#/definitions/kit.ErrorResponse'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/kit.ErrorResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: Get a user by ID
+      tags:
+      - user
 securityDefinitions:
   BasicAuth:
     type: basic
