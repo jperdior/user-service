@@ -79,7 +79,7 @@ func TestGetUserHandler(t *testing.T) {
 
 	t.Run("given a user id that does not exist it should return a not found error", func(t *testing.T) {
 
-		userID := "b167da12-7bc7-4234-99d2-5d4e43886975"
+		userID := "1e10c93e-eb59-4562-9dc6-621157c7458e"
 
 		repo.On("FindByID", userID).Return(nil, nil)
 
