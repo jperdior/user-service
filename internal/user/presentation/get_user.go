@@ -1,10 +1,12 @@
 package presentation
 
 import (
-	"github.com/gin-gonic/gin"
 	"net/http"
 	"user-service/internal/user/application/find_user"
+	"user-service/internal/user/domain"
 	"user-service/kit/query"
+
+	"github.com/gin-gonic/gin"
 )
 
 type GetUserResponse struct {
@@ -28,20 +30,25 @@ type GetUserResponse struct {
 // @Security ApiKeyAuth
 func GetUserHandler(queryBus query.Bus) gin.HandlerFunc {
 	return func(c *gin.Context) {
-		uuid := c.Param("uuid")
+		uid := c.Param("uuid")
 
-		findUserQuery := find_user.NewFindUserQuery(uuid)
+		findUserQuery := find_user.NewFindUserQuery(uid)
 
-		result, err := queryBus.Ask(findUserQuery)
+		user, err := queryBus.Ask(findUserQuery)
 		if err != nil {
 			c.JSON(err.Code, gin.H{"error": err.Error()})
 			return
 		}
-
-		if result == nil {
-			c.JSON(err.Code, gin.H{"error": "user not found"})
+		userEntity, ok := user.(*domain.User)
+		if !ok {
+			c.JSON(http.StatusInternalServerError, gin.H{"error": "Invalid user type"})
 			return
 		}
-		c.JSON(http.StatusOK, result)
+
+		userResponse := GetUserResponse{
+			ID:    userEntity.GetID(),
+			Email: userEntity.Email,
+		}
+		c.JSON(http.StatusOK, userResponse)
 	}
 }

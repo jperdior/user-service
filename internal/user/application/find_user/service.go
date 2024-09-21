@@ -14,7 +14,11 @@ func NewUserFinderService(repo domain.UserRepository) UserFinderService {
 }
 
 func (s UserFinderService) FindUser(ID string) (*domain.User, *kit.DomainError) {
-	user, err := s.userRepository.FindByID(ID)
+	uid, err := kit.NewUuidValueObject(ID)
+	if err != nil {
+		return nil, domain.NewInvalidIDError()
+	}
+	user, err := s.userRepository.FindByID(uid.String())
 	if err != nil {
 		return nil, kit.NewDomainError(err.Error(), "user.find_user.error", 500)
 	}
