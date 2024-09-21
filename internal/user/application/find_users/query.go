@@ -1,4 +1,4 @@
-package find_user
+package find_users
 
 import (
 	"user-service/kit"
@@ -7,15 +7,15 @@ import (
 
 const FindUsersQueryType query.Type = "find_users"
 
-type FindUserQuery struct {
+type FindUsersQuery struct {
 	ID       string
 	Email    string
 	Page     int
 	PageSize int
 }
 
-func NewFindUserQuery(id, email string, page, pageSize int) FindUserQuery {
-	return FindUserQuery{
+func NewFindUserQuery(id, email string, page, pageSize int) FindUsersQuery {
+	return FindUsersQuery{
 		ID:       id,
 		Email:    email,
 		Page:     page,
@@ -23,7 +23,7 @@ func NewFindUserQuery(id, email string, page, pageSize int) FindUserQuery {
 	}
 }
 
-func (c FindUserQuery) Type() query.Type {
+func (c FindUsersQuery) Type() query.Type {
 	return FindUsersQueryType
 }
 
@@ -31,17 +31,17 @@ type FindUsersQueryHandler struct {
 	service FindUsersService
 }
 
-func NewFindUserQueryHandler(service FindUsersService) FindUserQueryHandler {
+func NewFindUsersQueryHandler(service FindUsersService) FindUsersQueryHandler {
 	return FindUsersQueryHandler{service: service}
 }
 
 // Handle implements the query.Handler interface
 func (h FindUsersQueryHandler) Handle(findUserQuery query.Query) (interface{}, *kit.DomainError) {
-	fuq, ok := findUserQuery.(FindUserQuery)
+	fuq, ok := findUserQuery.(FindUsersQuery)
 	if !ok {
 		return nil, kit.NewDomainError("unexpected query", "user.find_user.error", 500)
 	}
-	user, err := h.service.FindUser(fuq.ID)
+	user, err := h.service.FindUsers(fuq.ID, fuq.Email, fuq.Page, fuq.PageSize)
 	if err != nil {
 		return nil, err
 	}

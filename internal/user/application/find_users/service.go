@@ -2,21 +2,20 @@ package find_users
 
 import (
 	"errors"
-	"internal/user/application/dto"
-	"internal/user/infrastructure/persistence"
+	"user-service/internal/user/domain"
 )
 
 type FindUsersService struct {
-	repo persistence.UserRepository
+	repo domain.UserRepository
 }
 
 // NewFindUsersService creates a new service for finding users
-func NewFindUsersService(repo persistence.UserRepository) *FindUsersService {
+func NewFindUsersService(repo domain.UserRepository) *FindUsersService {
 	return &FindUsersService{repo: repo}
 }
 
 // Execute fetches users based on the provided query (which includes pagination)
-func (s *FindUsersService) Execute(query FindUsersQuery) (FindUsersResult, error) {
+func (s *FindUsersService) FindUsers(query FindUsersQuery) (FindUsersResult, error) {
 	if query.Page < 1 || query.PageSize < 1 {
 		return FindUsersResult{}, errors.New("invalid pagination parameters")
 	}

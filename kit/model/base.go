@@ -2,7 +2,6 @@ package model
 
 import (
 	"time"
-	"user-service/kit"
 	"user-service/kit/event"
 )
 
@@ -12,7 +11,7 @@ type Base struct {
 	UpdatedAt time.Time `json:"updated_at"`
 }
 
-func NewBase(id kit.UuidValueObject) (*Base, error) {
+func NewBase(id UuidValueObject) (*Base, error) {
 	currentTime := time.Now()
 	return &Base{
 		ID:        id.Bytes(),

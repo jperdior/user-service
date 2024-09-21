@@ -6,7 +6,6 @@ import (
 	"github.com/google/uuid"
 	"golang.org/x/crypto/bcrypt"
 	"time"
-	"user-service/kit"
 	"user-service/kit/model"
 )
 
@@ -29,7 +28,7 @@ type User struct {
 	Roles         UserRoles `gorm:"serializer:json"`
 }
 
-func NewUser(uid kit.UuidValueObject, name string, email kit.EmailValueObject, password string) (*User, error) {
+func NewUser(uid model.UuidValueObject, name string, email model.EmailValueObject, password string) (*User, error) {
 	hashedPassword, err := hashPassword(password)
 	if err != nil {
 		return nil, err

@@ -1,4 +1,4 @@
-package kit
+package model
 
 import (
 	"database/sql/driver"

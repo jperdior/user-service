@@ -3,6 +3,7 @@ package find_user
 import (
 	"user-service/internal/user/domain"
 	"user-service/kit"
+	"user-service/kit/model"
 )
 
 type UserFinderService struct {
@@ -14,7 +15,7 @@ func NewUserFinderService(repo domain.UserRepository) UserFinderService {
 }
 
 func (s UserFinderService) FindUser(ID string) (*domain.User, *kit.DomainError) {
-	uid, err := kit.NewUuidValueObject(ID)
+	uid, err := model.NewUuidValueObject(ID)
 	if err != nil {
 		return nil, domain.NewInvalidIDError()
 	}

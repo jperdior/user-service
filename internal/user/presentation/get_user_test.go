@@ -10,7 +10,6 @@ import (
 	"user-service/internal/user/application/find_user"
 	"user-service/internal/user/domain"
 	"user-service/internal/user/domain/domainmocks"
-	"user-service/kit"
 	"user-service/kit/model"
 
 	"github.com/gin-gonic/gin"
@@ -33,7 +32,7 @@ func TestGetUserHandler(t *testing.T) {
 	router.GET("/user/:uuid", GetUserHandler(queryBus)).Use(auth.JWTMiddleware(secretKey))
 
 	testerUseriD := "7d8a8225-73da-4cc2-97fd-70d8e3baf6ac"
-	testerUid, err := kit.NewUuidValueObject(testerUseriD)
+	testerUid, err := model.NewUuidValueObject(testerUseriD)
 	require.NoError(t, err)
 
 	baseUser := model.Base{
@@ -51,7 +50,7 @@ func TestGetUserHandler(t *testing.T) {
 	t.Run("given a user id it should return the user", func(t *testing.T) {
 
 		userID := "b167da12-7bc7-4234-99d2-5d4e43886975"
-		uid, err := kit.NewUuidValueObject(userID)
+		uid, err := model.NewUuidValueObject(userID)
 		require.NoError(t, err)
 
 		baseUser := model.Base{
