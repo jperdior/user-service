@@ -1,9 +1,9 @@
 package inmemory
 
 import (
-	"context"
 	"fmt"
 	"log"
+	"user-service/kit"
 	"user-service/kit/query"
 )
 
@@ -20,13 +20,13 @@ func NewQueryBus() *QueryBus {
 }
 
 // Ask implements the query.Bus interface.
-func (b *QueryBus) Ask(ctx context.Context, query query.Query) (interface{}, error) {
+func (b *QueryBus) Ask(query query.Query) (interface{}, *kit.DomainError) {
 	handler, ok := b.handlers[query.Type()]
 	if !ok {
 		return nil, nil
 	}
 	fmt.Print("Asking a query\n")
-	answer, err := handler.Handle(ctx, query)
+	answer, err := handler.Handle(query)
 	if err != nil {
 		log.Printf("Error while handling %s - %s\n", query.Type(), err)
 	}

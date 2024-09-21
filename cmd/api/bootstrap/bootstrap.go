@@ -9,6 +9,7 @@ import (
 	"user-service/internal/platform/mailer"
 	"user-service/internal/platform/server"
 	"user-service/internal/platform/token"
+	"user-service/internal/user/application/find_user"
 	"user-service/internal/user/application/forgot_password"
 	"user-service/internal/user/application/login"
 	"user-service/internal/user/application/register"
@@ -39,16 +40,22 @@ func Run() error {
 	})
 
 	var (
-		commandBus            = inmemory.NewCommandBus()
-		queryBus              = inmemory.NewQueryBus()
-		eventBus              = inmemory.NewEventBus()
-		tokenService          = token.NewJwtService(cfg.JwtSecret, cfg.JwtExpiration)
-		userRepository        = infrastructure.NewUserRepository(mysql.DB)
+		commandBus     = inmemory.NewCommandBus()
+		queryBus       = inmemory.NewQueryBus()
+		eventBus       = inmemory.NewEventBus()
+		tokenService   = token.NewJwtService(cfg.JwtSecret, cfg.JwtExpiration)
+		userRepository = infrastructure.NewUserRepository(mysql.DB)
+		emailService   = infrastructure.NewEmailServiceImpl(mailer.MAILER)
+		// services
 		registerService       = register.NewUserRegisterService(userRepository)
 		loginService          = login.NewUserLoginService(userRepository, tokenService)
-		emailService          = infrastructure.NewEmailServiceImpl(mailer.MAILER)
 		forgotPasswordService = forgot_password.NewForgotPasswordService(userRepository, emailService)
 	)
+
+	// get user
+	findUserService := find_user.NewUserFinderService(userRepository)
+	findUserQueryHandler := find_user.NewFindUserQueryHandler(findUserService)
+	queryBus.Register(find_user.FindUserQueryType, findUserQueryHandler)
 
 	ctx, srv := server.New(
 		context.Background(),
@@ -56,6 +63,7 @@ func Run() error {
 			Host:            cfg.Host,
 			Port:            cfg.Port,
 			ShutdownTimeout: cfg.ShutdownTimeout,
+			JwtSecret:       cfg.JwtSecret,
 		},
 		commandBus,
 		queryBus,

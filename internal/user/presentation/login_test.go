@@ -4,10 +4,6 @@ import (
 	"bytes"
 	"encoding/json"
 	"errors"
-	"github.com/gin-gonic/gin"
-	"github.com/stretchr/testify/assert"
-	"github.com/stretchr/testify/mock"
-	"github.com/stretchr/testify/require"
 	"net/http"
 	"net/http/httptest"
 	"testing"
@@ -15,6 +11,11 @@ import (
 	"user-service/internal/user/domain"
 	"user-service/internal/user/domain/domainmocks"
 	"user-service/kit"
+
+	"github.com/gin-gonic/gin"
+	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/mock"
+	"github.com/stretchr/testify/require"
 )
 
 func TestLoginUserHandler(t *testing.T) {
@@ -30,6 +31,7 @@ func TestLoginUserHandler(t *testing.T) {
 	uid, err := kit.NewUuidValueObject("6d0f12c8-9fe9-4506-ad59-d386adbbe5c0")
 	require.NoError(t, err)
 	email, err := kit.NewEmailValueObject("jlp@federation.com")
+	require.NoError(t, err)
 
 	t.Run("Test correct email and password", func(t *testing.T) {
 
@@ -39,6 +41,7 @@ func TestLoginUserHandler(t *testing.T) {
 			email,
 			"enterprise",
 		)
+		require.NoError(t, err)
 
 		repo.On("FindByEmail", "jlp@federation.com").Return(mockUser, nil)
 		tokenService.On("GenerateToken", mock.Anything).Return("token", nil)
@@ -94,6 +97,7 @@ func TestLoginUserHandler(t *testing.T) {
 			email,
 			"enterprise",
 		)
+		require.NoError(t, err)
 
 		repo.On("FindByEmail", "jlp@federation.com").Return(mockUser, nil)
 
