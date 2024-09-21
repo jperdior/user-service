@@ -9,12 +9,19 @@ import (
 	"os"
 	"os/signal"
 	"time"
+	"user-service/internal/user/application/forgot_password"
 	"user-service/internal/user/application/login"
 	"user-service/internal/user/application/register"
 	"user-service/kit/command"
 	"user-service/kit/event"
 	"user-service/kit/query"
 )
+
+type ServerConfig struct {
+	Host            string        `default:""`
+	Port            uint          `default:"9091"`
+	ShutdownTimeout time.Duration `default:"10s"`
+}
 
 type Server struct {
 	httpAddr string
@@ -23,36 +30,37 @@ type Server struct {
 	shutdownTimeout time.Duration
 
 	//deps
-	commandBus      command.Bus
-	queryBus        query.Bus
-	eventBus        event.Bus
-	registerService *register.UserRegisterService
-	loginService    *login.UserLoginService
+	commandBus            command.Bus
+	queryBus              query.Bus
+	eventBus              event.Bus
+	registerService       *register.UserRegisterService
+	loginService          *login.UserLoginService
+	forgotPasswordService *forgot_password.ForgotPasswordService
 }
 
 func New(
 	ctx context.Context,
-	host string,
-	port uint,
-	shutdownTimeout time.Duration,
+	config ServerConfig,
 	commandBus command.Bus,
 	queryBus query.Bus,
 	eventBus event.Bus,
 	registerService *register.UserRegisterService,
 	loginService *login.UserLoginService,
+	forgotPasswordService *forgot_password.ForgotPasswordService,
 ) (context.Context, Server) {
 	srv := Server{
-		httpAddr: fmt.Sprintf("%s:%d", host, port),
+		httpAddr: fmt.Sprintf("%s:%d", config.Host, config.Port),
 		engine:   gin.Default(),
 
-		shutdownTimeout: shutdownTimeout,
+		shutdownTimeout: config.ShutdownTimeout,
 
 		//deps
-		commandBus:      commandBus,
-		queryBus:        queryBus,
-		eventBus:        eventBus,
-		registerService: registerService,
-		loginService:    loginService,
+		commandBus:            commandBus,
+		queryBus:              queryBus,
+		eventBus:              eventBus,
+		registerService:       registerService,
+		loginService:          loginService,
+		forgotPasswordService: forgotPasswordService,
 	}
 
 	srv.registerRoutes()

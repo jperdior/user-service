@@ -25,3 +25,7 @@ func NewDomainError(message, key string, code int) *DomainError {
 	log.Println(domainErr) // Log the error
 	return domainErr
 }
+
+type ErrorResponse struct {
+	Error string `json:"error"`
+}

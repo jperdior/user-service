@@ -7,8 +7,19 @@ services:
       - "9091:9091"
       environment:
       - PORT=9091
-      - POOLING_JWTSECRET=verysecret
-      - POOLING_JWTEXPIRATION=720
+      - USER_JWTSECRET=verysecret
+      - USER_JWTEXPIRATION=720
+      - USER_PORT=9091
+      - USER_DATABASEHOST=database
+      - USER_DATABASEUSER=root
+      - USER_DATABASEPASSWORD=root
+      - USER_DATABASENAME=user-service
+      - USER_DATABASEPORT=3306
+      - USER_DATABASEDRIVER=mysql
+      - USER_MAILERHOST=smtp.gmail.com
+      - USER_MAILERPORT=587
+      - USER_MAILERUSER=julio.perdiguer@gmail.com
+      - USER_MAILERPASSWORD=very
       healthcheck:
           test: ["CMD", "curl", "-f", "http://localhost:9091/status"]
           interval: 1s
