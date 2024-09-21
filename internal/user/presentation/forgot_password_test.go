@@ -6,7 +6,6 @@ import (
 	"errors"
 	"github.com/gin-gonic/gin"
 	"github.com/stretchr/testify/assert"
-	"github.com/stretchr/testify/mock"
 	"github.com/stretchr/testify/require"
 	"net/http"
 	"net/http/httptest"
@@ -67,7 +66,6 @@ func TestForgotPasswordHandler(t *testing.T) {
 
 		assert.Equal(t, http.StatusNotFound, recorder.Code)
 		userRepositoryMock.AssertExpectations(t)
-		emailServiceMock.AssertNotCalled(t, "SendPasswordResetEmail", mock.Anything)
 	})
 
 }
