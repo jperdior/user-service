@@ -10,8 +10,11 @@ import (
 )
 
 type GetUserResponse struct {
-	ID    string `json:"id"`
-	Email string `json:"email"`
+	ID        string `json:"id"`
+	Name      string `json:"name"`
+	Email     string `json:"email"`
+	CreatedAt string `json:"created_at"`
+	UpdatedAt string `json:"updated_at"`
 }
 
 // GetUserHandler is a handler for getting a user by ID.
@@ -46,8 +49,10 @@ func GetUserHandler(queryBus query.Bus) gin.HandlerFunc {
 		}
 
 		userResponse := GetUserResponse{
-			ID:    userEntity.GetID(),
-			Email: userEntity.Email,
+			ID:        userEntity.GetID(),
+			Email:     userEntity.Email,
+			CreatedAt: userEntity.CreatedAt.String(),
+			UpdatedAt: userEntity.UpdatedAt.String(),
 		}
 		c.JSON(http.StatusOK, userResponse)
 	}
