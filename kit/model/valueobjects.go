@@ -2,10 +2,10 @@ package model
 
 import (
 	"database/sql/driver"
-	"errors"
 	"fmt"
 	"github.com/google/uuid"
 	"regexp"
+	"user-service/kit"
 )
 
 // EmailValueObject represents a value object for emails
@@ -15,7 +15,7 @@ func NewEmailValueObject(value string) (EmailValueObject, error) {
 	const emailRegex = `^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$`
 	re := regexp.MustCompile(emailRegex)
 	if !re.MatchString(value) {
-		return "", errors.New("invalid email format")
+		return "", kit.NewDomainError("invalid email", "email.invalid", 400)
 	}
 	return EmailValueObject(value), nil
 }
@@ -66,4 +66,49 @@ func (uidValueObject *UuidValueObject) String() string {
 func (uidValueObject *UuidValueObject) Bytes() []byte {
 	bytes, _ := uuid.UUID(*uidValueObject).MarshalBinary()
 	return bytes
+}
+
+type SortDirValueObject string
+
+func NewSortDirValueObject(value string) (SortDirValueObject, error) {
+	if value == "" {
+		return SortDirValueObject("desc"), nil
+	}
+	if value != "asc" && value != "desc" {
+		return "", kit.NewDomainError("invalid sort direction", "sort.invalid", 400)
+	}
+	return SortDirValueObject(value), nil
+}
+
+func (sortDirValueObject *SortDirValueObject) Value() string {
+	return string(*sortDirValueObject)
+}
+
+type PageValueObject int
+
+func NewPageValueObject(value int) (PageValueObject, error) {
+	if value < 1 {
+		return PageValueObject(1), nil
+	}
+	return PageValueObject(value), nil
+}
+
+func (pageValueObject *PageValueObject) Value() int {
+	return int(*pageValueObject)
+}
+
+type PageSizeValueObject int
+
+func NewPageSizeValueObject(value int) (PageSizeValueObject, error) {
+	if value < 1 {
+		return PageSizeValueObject(25), nil
+	}
+	if value > 100 {
+		return -1, kit.NewDomainError("page size must be less than or equal to 100", "page_size.invalid", 400)
+	}
+	return PageSizeValueObject(value), nil
+}
+
+func (pageSizeValueObject *PageSizeValueObject) Value() int {
+	return int(*pageSizeValueObject)
 }

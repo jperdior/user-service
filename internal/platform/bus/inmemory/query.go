@@ -3,7 +3,6 @@ package inmemory
 import (
 	"fmt"
 	"log"
-	"user-service/kit"
 	"user-service/kit/query"
 )
 
@@ -20,7 +19,7 @@ func NewQueryBus() *QueryBus {
 }
 
 // Ask implements the query.Bus interface.
-func (b *QueryBus) Ask(query query.Query) (interface{}, *kit.DomainError) {
+func (b *QueryBus) Ask(query query.Query) (interface{}, error) {
 	handler, ok := b.handlers[query.Type()]
 	if !ok {
 		return nil, nil

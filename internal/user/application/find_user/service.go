@@ -1,6 +1,7 @@
 package find_user
 
 import (
+	"user-service/internal/user/application/dto"
 	"user-service/internal/user/domain"
 	"user-service/kit"
 	"user-service/kit/model"
@@ -10,11 +11,11 @@ type UserFinderService struct {
 	userRepository domain.UserRepository
 }
 
-func NewUserFinderService(repo domain.UserRepository) UserFinderService {
-	return UserFinderService{userRepository: repo}
+func NewUserFinderService(repo domain.UserRepository) *UserFinderService {
+	return &UserFinderService{userRepository: repo}
 }
 
-func (s UserFinderService) FindUser(ID string) (*domain.User, *kit.DomainError) {
+func (s *UserFinderService) FindUser(ID string) (*dto.UserDTO, *kit.DomainError) {
 	uid, err := model.NewUuidValueObject(ID)
 	if err != nil {
 		return nil, domain.NewInvalidIDError()
@@ -27,5 +28,5 @@ func (s UserFinderService) FindUser(ID string) (*domain.User, *kit.DomainError) 
 		return nil, domain.NewUserNotFoundError()
 	}
 
-	return user, nil
+	return dto.NewUserDTO(user), nil
 }

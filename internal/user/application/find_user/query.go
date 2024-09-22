@@ -22,15 +22,15 @@ func (c FindUserQuery) Type() query.Type {
 }
 
 type FindUserQueryHandler struct {
-	service UserFinderService
+	service *UserFinderService
 }
 
-func NewFindUserQueryHandler(service UserFinderService) FindUserQueryHandler {
+func NewFindUserQueryHandler(service *UserFinderService) FindUserQueryHandler {
 	return FindUserQueryHandler{service: service}
 }
 
 // Handle implements the query.Handler interface
-func (h FindUserQueryHandler) Handle(findUserQuery query.Query) (interface{}, *kit.DomainError) {
+func (h FindUserQueryHandler) Handle(findUserQuery query.Query) (interface{}, error) {
 	fuq, ok := findUserQuery.(FindUserQuery)
 	if !ok {
 		return nil, kit.NewDomainError("unexpected query", "user.find_user.error", 500)

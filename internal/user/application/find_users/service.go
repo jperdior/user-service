@@ -1,8 +1,10 @@
 package find_users
 
 import (
-	"errors"
+	"user-service/internal/user/application/dto"
 	"user-service/internal/user/domain"
+	"user-service/kit"
+	"user-service/kit/model"
 )
 
 type FindUsersService struct {
@@ -14,33 +16,63 @@ func NewFindUsersService(repo domain.UserRepository) *FindUsersService {
 	return &FindUsersService{repo: repo}
 }
 
-// Execute fetches users based on the provided query (which includes pagination)
-func (s *FindUsersService) FindUsers(query FindUsersQuery) (FindUsersResult, error) {
-	if query.Page < 1 || query.PageSize < 1 {
-		return FindUsersResult{}, errors.New("invalid pagination parameters")
+// FindUsers fetches users based on the provided query (which includes pagination)
+func (s *FindUsersService) FindUsers(
+	ID, name, email, role string, page, pageSize int, sort, sortDir string,
+) (model.PaginationDTO, error) {
+	pageValueObject, err := model.NewPageValueObject(page)
+	if err != nil {
+		return model.PaginationDTO{}, err
+	}
+	pageSizeValueObject, err := model.NewPageSizeValueObject(pageSize)
+	if err != nil {
+		return model.PaginationDTO{}, err
+	}
+	sortDirValueObject, err := model.NewSortDirValueObject(sortDir)
+	if err != nil {
+		return model.PaginationDTO{}, err
 	}
 
-	// Fetch paginated users from repository
-	users, totalRows, err := s.repo.FindPaginated(query.Page, query.PageSize)
+	filters := map[string]interface{}{}
+	if ID != "" {
+		filters["id"] = ID
+	}
+	if name != "" {
+		filters["name"] = name
+	}
+	if email != "" {
+		filters["email"] = email
+	}
+	if role != "" {
+		filters["role"] = role
+	}
+
+	criteria := domain.NewCriteria(filters, sort, sortDirValueObject.Value(), pageValueObject.Value(), pageSizeValueObject.Value())
+
+	users, totalRows, err := s.repo.Find(criteria)
 	if err != nil {
-		return FindUsersResult{}, err
+		return model.PaginationDTO{}, kit.NewDomainError(err.Error(), "user.find_users.error", 500)
 	}
 
 	// Calculate total pages
-	totalPages := int((totalRows + int64(query.PageSize) - 1) / int64(query.PageSize))
+	totalPages := int((totalRows + int64(pageSizeValueObject.Value()) - 1) / int64(pageSizeValueObject.Value()))
 
 	// Build pagination DTO
-	pagination := dto.PaginationDTO{
-		Page:       query.Page,
-		PageSize:   query.PageSize,
+	pagination := model.PaginationDTO{
+		Page:       pageValueObject.Value(),
+		PageSize:   pageSizeValueObject.Value(),
 		TotalRows:  totalRows,
 		TotalPages: totalPages,
-		Items:      users,
+		Data:       mapUsersToDTOs(users),
 	}
 
-	// Return result
-	return FindUsersResult{
-		Users:      users,
-		Pagination: pagination,
-	}, nil
+	return pagination, nil
+}
+
+func mapUsersToDTOs(users []*domain.User) []*dto.UserDTO {
+	userDTOs := make([]*dto.UserDTO, len(users))
+	for i, user := range users {
+		userDTOs[i] = dto.NewUserDTO(user)
+	}
+	return userDTOs
 }

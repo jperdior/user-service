@@ -27,6 +27,38 @@ func (u *UserRepositoryImpl) FindByID(id string) (*domain.User, error) {
 	return &user, nil
 }
 
+func (u *UserRepositoryImpl) Find(criteria domain.Criteria) ([]*domain.User, int64, error) {
+	var users []*domain.User
+	db := u.db
+
+	for _, filter := range criteria.Filters {
+		if validFilter, ok := domain.ValidFilters[filter.Name]; ok {
+			switch validFilter.Operation {
+			case "LIKE":
+				db = db.Where(validFilter.Name+" LIKE ?", "%"+filter.Value.(string)+"%")
+			case "=":
+				db = db.Where(validFilter.Name+" = ?", filter.Value)
+			}
+		}
+	}
+
+	var totalRows int64
+	db.Model(&domain.User{}).Count(&totalRows)
+
+	if criteria.Page > 0 {
+		offset := (criteria.Page - 1) * criteria.PageSize
+		db = db.Offset(offset)
+	}
+	if criteria.PageSize > 0 {
+		db = db.Limit(criteria.PageSize)
+	}
+	if criteria.Sort != "" {
+		db = db.Order(criteria.Sort)
+	}
+	err := db.Find(&users).Error
+	return users, totalRows, err
+}
+
 func (u *UserRepositoryImpl) FindByEmail(email string) (*domain.User, error) {
 	var user domain.User
 	err := u.db.Where("email = ?", email).First(&user).Error

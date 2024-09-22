@@ -10,6 +10,7 @@ import (
 	"user-service/internal/platform/server"
 	"user-service/internal/platform/token"
 	"user-service/internal/user/application/find_user"
+	"user-service/internal/user/application/find_users"
 	"user-service/internal/user/application/forgot_password"
 	"user-service/internal/user/application/login"
 	"user-service/internal/user/application/register"
@@ -56,6 +57,10 @@ func Run() error {
 	findUserService := find_user.NewUserFinderService(userRepository)
 	findUserQueryHandler := find_user.NewFindUserQueryHandler(findUserService)
 	queryBus.Register(find_user.FindUserQueryType, findUserQueryHandler)
+	// get users
+	findUsersService := find_users.NewFindUsersService(userRepository)
+	findUsersQueryHandler := find_users.NewFindUsersQueryHandler(findUsersService)
+	queryBus.Register(find_users.FindUsersQueryType, findUsersQueryHandler)
 
 	ctx, srv := server.New(
 		context.Background(),

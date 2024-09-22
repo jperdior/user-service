@@ -9,7 +9,7 @@ import (
 	ginSwagger "github.com/swaggo/gin-swagger"
 )
 
-// @title           Golang Template API
+// @title           User Service API
 // @version         1.0
 // @description     This is a Golang template API
 // @termsOfService  http://swagger.io/terms/
@@ -24,10 +24,9 @@ import (
 // @host      localhost:9091
 // @BasePath  /api/v1
 
-// @securityDefinitions.bearerAuth  BearerAuth
-// @securityDefinitions.bearerAuth.type  apiKey
-// @securityDefinitions.bearerAuth.name  Authorization
-// @securityDefinitions.bearerAuth.in    header
+// @securityDefinitions.apikey Bearer
+// @in header
+// @name Authorization
 
 // @externalDocs.description  OpenAPI
 // @externalDocs.url          https://swagger.io/resources/open-api/
@@ -44,6 +43,7 @@ func (s *Server) registerRoutes() {
 	protected := api.Group("")
 	protected.Use(auth.JWTMiddleware(s.config.JwtSecret))
 	protected.GET("/user/:uuid", presentation.GetUserHandler(s.queryBus))
+	protected.GET("/users", presentation.GetUsersHandler(s.queryBus))
 
 	s.engine.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 }

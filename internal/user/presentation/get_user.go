@@ -1,9 +1,11 @@
 package presentation
 
 import (
+	"errors"
 	"net/http"
 	"user-service/internal/user/application/find_user"
 	"user-service/internal/user/domain"
+	"user-service/kit"
 	"user-service/kit/query"
 
 	"github.com/gin-gonic/gin"
@@ -30,7 +32,7 @@ type GetUserResponse struct {
 // @Failure 500 {object} kit.ErrorResponse "Internal server error"
 // @Router /user/{uuid} [get]
 // @Tags user
-// @Security ApiKeyAuth
+// @Security Bearer
 func GetUserHandler(queryBus query.Bus) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		uid := c.Param("uuid")
@@ -39,7 +41,12 @@ func GetUserHandler(queryBus query.Bus) gin.HandlerFunc {
 
 		user, err := queryBus.Ask(findUserQuery)
 		if err != nil {
-			c.JSON(err.Code, gin.H{"error": err.Error()})
+			var domainError *kit.DomainError
+			if errors.As(err, &domainError) {
+				c.JSON(domainError.Code, gin.H{"error": domainError.Message})
+			} else {
+				c.JSON(http.StatusInternalServerError, gin.H{"error": "Internal server error"})
+			}
 			return
 		}
 		userEntity, ok := user.(*domain.User)
