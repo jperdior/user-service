@@ -44,3 +44,11 @@ func NewUserNotFoundError() *kit.DomainError {
 		"user.forgot_password.user_not_found",
 		http.StatusNotFound)
 }
+
+// NewUnauthorizedError creates a new UnauthorizedError.
+func NewUnauthorizedError() *kit.DomainError {
+	return kit.NewDomainError(
+		"Unauthorized",
+		"user.find_user.error",
+		http.StatusUnauthorized)
+}

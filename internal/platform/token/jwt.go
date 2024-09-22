@@ -18,8 +18,10 @@ func NewJwtService(secretKey string, expiration int) *JWTService {
 func (s *JWTService) GenerateToken(user *domain.User) (string, error) {
 	duration := time.Duration(s.expiration) * time.Hour
 	claims := jwt.MapClaims{
-		"uid":   user.GetID(),
+		"ID":    user.GetID(),
 		"roles": user.Roles,
+		"name":  user.Name,
+		"email": user.Email,
 		"iss":   "user-service",
 		"iat":   time.Now().Unix(),
 		"exp":   time.Now().Add(duration).Unix(),

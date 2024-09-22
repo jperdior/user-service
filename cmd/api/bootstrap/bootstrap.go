@@ -77,6 +77,7 @@ func Run() error {
 		loginService,
 		forgotPasswordService,
 	)
+
 	return srv.Run(ctx)
 }
 

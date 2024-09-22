@@ -63,3 +63,6 @@ refresh-openapi: ### Generate openapi docs
 
 open-docs:
 	open http://localhost:9091/swagger/index.html
+
+generate-mocks:
+	go generate ./...

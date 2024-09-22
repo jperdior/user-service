@@ -15,7 +15,10 @@ func NewUserFinderService(repo domain.UserRepository) *UserFinderService {
 	return &UserFinderService{userRepository: repo}
 }
 
-func (s *UserFinderService) FindUser(ID string) (*dto.UserDTO, *kit.DomainError) {
+func (s *UserFinderService) FindUser(authenticatedUser *domain.AuthenticatedUser, ID string) (*dto.UserDTO, *kit.DomainError) {
+	if !authenticatedUser.IsSuperAdmin() && authenticatedUser.ID != ID {
+		return nil, domain.NewUnauthorizedError()
+	}
 	uid, err := model.NewUuidValueObject(ID)
 	if err != nil {
 		return nil, domain.NewInvalidIDError()

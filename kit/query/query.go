@@ -1,9 +1,11 @@
 package query
 
+import "context"
+
 // Bus defines the expected behaviour from a query bus.
 type Bus interface {
 	// Ask is the method used to ask new queries.
-	Ask(Query) (interface{}, error)
+	Ask(context.Context, Query) (interface{}, error)
 	// Register is the method used to register a new query handler.
 	Register(Type, Handler)
 }
@@ -20,5 +22,5 @@ type Query interface {
 
 // Handler defines the expected behaviour from a query handler.
 type Handler interface {
-	Handle(Query) (interface{}, error)
+	Handle(context.Context, Query) (interface{}, error)
 }

@@ -1,6 +1,7 @@
 package find_user
 
 import (
+	"context"
 	"user-service/kit"
 	"user-service/kit/query"
 )
@@ -30,12 +31,16 @@ func NewFindUserQueryHandler(service *UserFinderService) FindUserQueryHandler {
 }
 
 // Handle implements the query.Handler interface
-func (h FindUserQueryHandler) Handle(findUserQuery query.Query) (interface{}, error) {
+func (h FindUserQueryHandler) Handle(ctx context.Context, findUserQuery query.Query) (interface{}, error) {
+	authenticatedUser, err := kit.GetAuthenticatedUser(ctx)
+	if err != nil {
+		return nil, err
+	}
 	fuq, ok := findUserQuery.(FindUserQuery)
 	if !ok {
 		return nil, kit.NewDomainError("unexpected query", "user.find_user.error", 500)
 	}
-	user, err := h.service.FindUser(fuq.ID)
+	user, err := h.service.FindUser(authenticatedUser, fuq.ID)
 	if err != nil {
 		return nil, err
 	}
