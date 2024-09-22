@@ -2,6 +2,7 @@ package find_user
 
 import (
 	"context"
+	"user-service/internal/user/application"
 	"user-service/kit"
 	"user-service/kit/query"
 )
@@ -32,7 +33,7 @@ func NewFindUserQueryHandler(service *UserFinderService) FindUserQueryHandler {
 
 // Handle implements the query.Handler interface
 func (h FindUserQueryHandler) Handle(ctx context.Context, findUserQuery query.Query) (interface{}, error) {
-	authenticatedUser, err := kit.GetAuthenticatedUser(ctx)
+	authenticatedUser, err := application.GetAuthenticatedUser(ctx)
 	if err != nil {
 		return nil, err
 	}
