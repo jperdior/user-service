@@ -3,6 +3,7 @@ package server
 import (
 	"user-service/internal/platform/server/handler/status"
 	"user-service/internal/platform/server/middleware/auth"
+	"user-service/internal/user/domain"
 	"user-service/internal/user/presentation"
 
 	swaggerFiles "github.com/swaggo/files"
@@ -43,7 +44,10 @@ func (s *Server) registerRoutes() {
 	protected := api.Group("")
 	protected.Use(auth.JWTMiddleware(s.config.JwtSecret))
 	protected.GET("/user/:uuid", presentation.GetUserHandler(s.queryBus))
-	protected.GET("/users", presentation.GetUsersHandler(s.queryBus))
+
+	adminProtected := protected.Group("")
+	adminProtected.Use(auth.RoleMiddleware([]string{domain.RoleSuperAdmin}))
+	adminProtected.GET("/users", presentation.GetUsersHandler(s.queryBus))
 
 	s.engine.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 }
