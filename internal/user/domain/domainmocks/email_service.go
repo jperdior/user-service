@@ -27,17 +27,17 @@ func (_m *EmailService) SendEmail(to string, subject string, body string) error 
 	return r0
 }
 
-// SendPasswordResetEmail provides a mock function with given fields: to
-func (_m *EmailService) SendPasswordResetEmail(to string) error {
-	ret := _m.Called(to)
+// SendPasswordResetEmail provides a mock function with given fields: to, token
+func (_m *EmailService) SendPasswordResetEmail(to string, token string) error {
+	ret := _m.Called(to, token)
 
 	if len(ret) == 0 {
 		panic("no return value specified for SendPasswordResetEmail")
 	}
 
 	var r0 error
-	if rf, ok := ret.Get(0).(func(string) error); ok {
-		r0 = rf(to)
+	if rf, ok := ret.Get(0).(func(string, string) error); ok {
+		r0 = rf(to, token)
 	} else {
 		r0 = ret.Error(0)
 	}

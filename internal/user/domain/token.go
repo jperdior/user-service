@@ -4,4 +4,5 @@ package domain
 
 type TokenService interface {
 	GenerateToken(user *User) (string, error)
+	GenerateResetPasswordToken(user *User) (string, error)
 }

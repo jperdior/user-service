@@ -51,7 +51,7 @@ func Run() error {
 		// services
 		registerService       = register.NewUserRegisterService(userRepository)
 		loginService          = login.NewUserLoginService(userRepository, tokenService)
-		forgotPasswordService = forgot_password.NewForgotPasswordService(userRepository, emailService)
+		forgotPasswordService = forgot_password.NewForgotPasswordService(userRepository, emailService, tokenService)
 		updateUserService     = update_user.NewUpdateUserService(userRepository)
 	)
 

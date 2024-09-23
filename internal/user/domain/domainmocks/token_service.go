@@ -13,6 +13,34 @@ type TokenService struct {
 	mock.Mock
 }
 
+// GenerateResetPasswordToken provides a mock function with given fields: user
+func (_m *TokenService) GenerateResetPasswordToken(user *domain.User) (string, error) {
+	ret := _m.Called(user)
+
+	if len(ret) == 0 {
+		panic("no return value specified for GenerateResetPasswordToken")
+	}
+
+	var r0 string
+	var r1 error
+	if rf, ok := ret.Get(0).(func(*domain.User) (string, error)); ok {
+		return rf(user)
+	}
+	if rf, ok := ret.Get(0).(func(*domain.User) string); ok {
+		r0 = rf(user)
+	} else {
+		r0 = ret.Get(0).(string)
+	}
+
+	if rf, ok := ret.Get(1).(func(*domain.User) error); ok {
+		r1 = rf(user)
+	} else {
+		r1 = ret.Error(1)
+	}
+
+	return r0, r1
+}
+
 // GenerateToken provides a mock function with given fields: user
 func (_m *TokenService) GenerateToken(user *domain.User) (string, error) {
 	ret := _m.Called(user)
