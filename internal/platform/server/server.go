@@ -12,6 +12,7 @@ import (
 	"user-service/internal/user/application/forgot_password"
 	"user-service/internal/user/application/login"
 	"user-service/internal/user/application/register"
+	"user-service/internal/user/application/update_user"
 	"user-service/kit/command"
 	"user-service/kit/event"
 	"user-service/kit/query"
@@ -35,6 +36,7 @@ type Server struct {
 	registerService       *register.UserRegisterService
 	loginService          *login.UserLoginService
 	forgotPasswordService *forgot_password.ForgotPasswordService
+	updateUserService     *update_user.UpdateUserService
 }
 
 func New(
@@ -46,6 +48,7 @@ func New(
 	registerService *register.UserRegisterService,
 	loginService *login.UserLoginService,
 	forgotPasswordService *forgot_password.ForgotPasswordService,
+	updateUserService *update_user.UpdateUserService,
 ) (context.Context, Server) {
 	srv := Server{
 		config: config,
@@ -60,6 +63,7 @@ func New(
 		registerService:       registerService,
 		loginService:          loginService,
 		forgotPasswordService: forgotPasswordService,
+		updateUserService:     updateUserService,
 	}
 
 	srv.registerRoutes()

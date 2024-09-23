@@ -14,6 +14,7 @@ import (
 	"user-service/internal/user/application/forgot_password"
 	"user-service/internal/user/application/login"
 	"user-service/internal/user/application/register"
+	"user-service/internal/user/application/update_user"
 	"user-service/internal/user/infrastructure"
 )
 
@@ -51,6 +52,7 @@ func Run() error {
 		registerService       = register.NewUserRegisterService(userRepository)
 		loginService          = login.NewUserLoginService(userRepository, tokenService)
 		forgotPasswordService = forgot_password.NewForgotPasswordService(userRepository, emailService)
+		updateUserService     = update_user.NewUpdateUserService(userRepository)
 	)
 
 	// get user
@@ -76,6 +78,7 @@ func Run() error {
 		registerService,
 		loginService,
 		forgotPasswordService,
+		updateUserService
 	)
 
 	return srv.Run(ctx)

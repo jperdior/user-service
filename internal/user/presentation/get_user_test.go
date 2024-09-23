@@ -30,7 +30,7 @@ func TestGetUserHandler(t *testing.T) {
 	gin.SetMode(gin.TestMode)
 	router := gin.Default()
 	router.Use(auth.JWTMiddleware(secretKey))
-	router.GET("/user/:uuid", GetUserHandler(queryBus))
+	router.GET("/users/:uuid", GetUserHandler(queryBus))
 
 	testerUserId := "7d8a8225-73da-4cc2-97fd-70d8e3baf6ac"
 	testerUid, err := model.NewUuidValueObject(testerUserId)

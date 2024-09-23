@@ -54,6 +54,20 @@ func (u *User) GetID() string {
 	return uid.String()
 }
 
+func (u *User) IsSuperAdmin() bool {
+	for _, role := range u.Roles {
+		if role == RoleSuperAdmin {
+			return true
+		}
+	}
+	return false
+}
+
+func (u *User) SetPassword(password string) {
+	hashedPassword, _ := hashPassword(password)
+	u.Password = hashedPassword
+}
+
 func hashPassword(password string) (string, error) {
 	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
 	if err != nil {

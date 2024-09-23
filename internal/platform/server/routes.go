@@ -43,7 +43,8 @@ func (s *Server) registerRoutes() {
 
 	protected := api.Group("")
 	protected.Use(auth.JWTMiddleware(s.config.JwtSecret))
-	protected.GET("/user/:uuid", presentation.GetUserHandler(s.queryBus))
+	protected.GET("/users/:uuid", presentation.GetUserHandler(s.queryBus))
+	protected.PUT("/users/:uuid", presentation.UpdateUserHandler(s.updateUserService))
 
 	adminProtected := protected.Group("")
 	adminProtected.Use(auth.RoleMiddleware([]string{domain.RoleSuperAdmin}))
