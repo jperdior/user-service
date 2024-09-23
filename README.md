@@ -62,3 +62,9 @@ To refresh the openapi documentation you can run the following command:
 ```bash
 make refresh-openapi
 ```
+
+To regenerate the mocks you can run the following command:
+
+```bash
+make generate-mocks
+```
