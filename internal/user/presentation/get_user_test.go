@@ -6,11 +6,10 @@ import (
 	"testing"
 	"user-service/internal/platform/bus/inmemory"
 	"user-service/internal/platform/server/middleware/auth"
-	"user-service/internal/platform/token"
 	"user-service/internal/user/application/find_user"
 	"user-service/internal/user/domain"
 	"user-service/internal/user/domain/domainmocks"
-	"user-service/kit/model"
+	"user-service/kit/test/helpers"
 	"user-service/kit/test/pages"
 
 	"github.com/gin-gonic/gin"
@@ -33,50 +32,25 @@ func TestGetUserHandler(t *testing.T) {
 	router.Use(auth.JWTMiddleware(secretKey))
 	router.GET("/users/:uuid", GetUserHandler(queryBus))
 
-	testerUserId := "7d8a8225-73da-4cc2-97fd-70d8e3baf6ac"
-	testerUid, err := model.NewUuidValueObject(testerUserId)
-	require.NoError(t, err)
-
-	baseUser := model.Base{
-		ID: testerUid.Bytes(),
-	}
-	authenticatedUser := domain.User{
-		Base:  baseUser,
-		Name:  "Tester",
-		Email: "tester@federation.com",
-		Roles: []string{domain.RoleSuperAdmin},
-	}
-
-	tokenService := token.NewJwtService(secretKey, 1)
-	jwtToken, err := tokenService.GenerateToken(&authenticatedUser)
+	jwtToken, err := helpers.GenerateJwtToken([]string{domain.RoleSuperAdmin}, secretKey)
 	require.NoError(t, err)
 
 	userPage := pages.NewUserPage(&jwtToken)
 
 	t.Run("given a user id it should return the user", func(t *testing.T) {
 
-		userID := "b167da12-7bc7-4234-99d2-5d4e43886975"
-		uid, err := model.NewUuidValueObject(userID)
-		require.NoError(t, err)
+		expectedUser := helpers.CreateUser()
 
-		baseUser := model.Base{
-			ID: uid.Bytes(),
-		}
-		expectedUser := domain.User{
-			Base:  baseUser,
-			Email: "jlp@federation.com",
-		}
+		repo.On("FindByID", expectedUser.GetID()).Return(expectedUser, nil)
 
-		repo.On("FindByID", uid.String()).Return(&expectedUser, nil)
-
-		request, err := userPage.GetUser(userID)
+		request, err := userPage.GetUser(expectedUser.GetID())
 		require.NoError(t, err)
 		recorder := httptest.NewRecorder()
 		router.ServeHTTP(recorder, request)
 
 		assert.Equal(t, http.StatusOK, recorder.Code)
 		responseBody := recorder.Body.String()
-		assert.Contains(t, responseBody, userID)
+		assert.Contains(t, responseBody, expectedUser.GetID())
 		assert.Contains(t, responseBody, expectedUser.Email)
 
 	})
