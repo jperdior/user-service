@@ -7,4 +7,4 @@ EXPOSE 9091
 
 COPY bin/user-service /
 
-ENTRYPOINT [ "/car-pooling-challenge" ]
+ENTRYPOINT [ "/user-service" ]
