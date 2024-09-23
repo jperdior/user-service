@@ -11,6 +11,7 @@ import (
 	"user-service/internal/user/domain"
 	"user-service/internal/user/domain/domainmocks"
 	"user-service/kit/model"
+	"user-service/kit/test/pages"
 
 	"github.com/gin-gonic/gin"
 	"github.com/stretchr/testify/assert"
@@ -51,6 +52,8 @@ func TestGetUsersHandler(t *testing.T) {
 	jwtToken, err := tokenService.GenerateToken(&authenticatedUser)
 	require.NoError(t, err)
 
+	userPage := pages.NewUserPage(&jwtToken)
+
 	t.Run("given there's 2 users in the database it returns them", func(t *testing.T) {
 
 		userID := "b167da12-7bc7-4234-99d2-5d4e43886975"
@@ -81,9 +84,8 @@ func TestGetUsersHandler(t *testing.T) {
 
 		repo.On("Find", mock.Anything).Return([]*domain.User{&expectedUser, &expectedUser2}, totalRows, nil)
 
-		request, err := http.NewRequest(http.MethodGet, "/users", nil)
+		request, err := userPage.GetUsers()
 		require.NoError(t, err)
-		request.Header.Set("Authorization", "Bearer "+jwtToken)
 		recorder := httptest.NewRecorder()
 		router.ServeHTTP(recorder, request)
 

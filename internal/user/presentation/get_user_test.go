@@ -51,6 +51,8 @@ func TestGetUserHandler(t *testing.T) {
 	jwtToken, err := tokenService.GenerateToken(&authenticatedUser)
 	require.NoError(t, err)
 
+	userPage := pages.NewUserPage(&jwtToken)
+
 	t.Run("given a user id it should return the user", func(t *testing.T) {
 
 		userID := "b167da12-7bc7-4234-99d2-5d4e43886975"
@@ -67,9 +69,8 @@ func TestGetUserHandler(t *testing.T) {
 
 		repo.On("FindByID", uid.String()).Return(&expectedUser, nil)
 
-		request, err := pages.GetUser(userID)
+		request, err := userPage.GetUser(userID)
 		require.NoError(t, err)
-		request.Header.Set("Authorization", "Bearer "+jwtToken)
 		recorder := httptest.NewRecorder()
 		router.ServeHTTP(recorder, request)
 
@@ -86,9 +87,8 @@ func TestGetUserHandler(t *testing.T) {
 
 		repo.On("FindByID", userID).Return(nil, nil)
 
-		request, err := pages.GetUser(userID)
+		request, err := userPage.GetUser(userID)
 		require.NoError(t, err)
-		request.Header.Set("Authorization", "Bearer "+jwtToken)
 
 		recorder := httptest.NewRecorder()
 		router.ServeHTTP(recorder, request)
@@ -98,9 +98,8 @@ func TestGetUserHandler(t *testing.T) {
 
 	t.Run("given an invalid user id it should return a bad request error", func(t *testing.T) {
 		userID := "FDASFSDF"
-		request, err := pages.GetUser(userID)
+		request, err := userPage.GetUser(userID)
 		require.NoError(t, err)
-		request.Header.Set("Authorization", "Bearer "+jwtToken)
 
 		recorder := httptest.NewRecorder()
 		router.ServeHTTP(recorder, request)

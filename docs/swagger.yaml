@@ -1,5 +1,22 @@
 basePath: /api/v1
 definitions:
+  dto.UserDTO:
+    properties:
+      created_at:
+        type: string
+      email:
+        type: string
+      id:
+        type: string
+      name:
+        type: string
+      roles:
+        items:
+          type: string
+        type: array
+      updated_at:
+        type: string
+    type: object
   kit.ErrorResponse:
     properties:
       error:
@@ -29,19 +46,6 @@ definitions:
       message:
         type: string
     type: object
-  presentation.GetUserResponse:
-    properties:
-      created_at:
-        type: string
-      email:
-        type: string
-      id:
-        type: string
-      name:
-        type: string
-      updated_at:
-        type: string
-    type: object
   presentation.LoginRequest:
     properties:
       email:
@@ -57,20 +61,7 @@ definitions:
       token:
         type: string
     type: object
-  presentation.UserResponse:
-    properties:
-      created_at:
-        type: string
-      email:
-        type: string
-      id:
-        type: string
-      name:
-        type: string
-      updated_at:
-        type: string
-    type: object
-  presentation.registerUserRequest:
+  presentation.RegisterUserRequest:
     properties:
       email:
         type: string
@@ -85,6 +76,32 @@ definitions:
     - id
     - name
     - password
+    type: object
+  presentation.UserResponse:
+    properties:
+      created_at:
+        type: string
+      email:
+        type: string
+      id:
+        type: string
+      name:
+        type: string
+      updated_at:
+        type: string
+    type: object
+  presentation.updateUserRequest:
+    properties:
+      email:
+        type: string
+      name:
+        type: string
+      password:
+        type: string
+      roles:
+        items:
+          type: string
+        type: array
     type: object
 externalDocs:
   description: OpenAPI
@@ -141,7 +158,7 @@ paths:
       description: Authenticates a user and returns a JWT token if credentials are
         valid
       parameters:
-      - description: Login request body
+      - description: User login details
         in: body
         name: login
         required: true
@@ -151,7 +168,7 @@ paths:
       - application/json
       responses:
         "200":
-          description: token
+          description: OK
           schema:
             $ref: '#/definitions/presentation.LoginResponse'
         "400":
@@ -180,7 +197,7 @@ paths:
         name: request
         required: true
         schema:
-          $ref: '#/definitions/presentation.registerUserRequest'
+          $ref: '#/definitions/presentation.RegisterUserRequest'
       produces:
       - application/json
       responses:
@@ -226,7 +243,7 @@ paths:
         "200":
           description: User found
           schema:
-            $ref: '#/definitions/presentation.GetUserResponse'
+            $ref: '#/definitions/dto.UserDTO'
         "400":
           description: Invalid UUID
           schema:
@@ -300,6 +317,47 @@ paths:
       security:
       - Bearer: []
       summary: Get a user by ID
+      tags:
+      - user
+  /users/{uuid}:
+    put:
+      consumes:
+      - application/json
+      description: Update a user's details. Only non-empty fields will be updated.
+      parameters:
+      - description: User ID
+        in: path
+        name: uuid
+        required: true
+        type: string
+      - description: Update User Request
+        in: body
+        name: updateUserRequest
+        required: true
+        schema:
+          $ref: '#/definitions/presentation.updateUserRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: User updated successfully
+          schema:
+            $ref: '#/definitions/dto.UserDTO'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/kit.ErrorResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/kit.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/kit.ErrorResponse'
+      security:
+      - Bearer: []
+      summary: Update a user
       tags:
       - user
 securityDefinitions:

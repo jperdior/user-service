@@ -1,7 +1,6 @@
 package presentation
 
 import (
-	"bytes"
 	"encoding/json"
 	"github.com/gin-gonic/gin"
 	"github.com/stretchr/testify/assert"
@@ -13,6 +12,7 @@ import (
 	"user-service/internal/user/application/register"
 	"user-service/internal/user/domain"
 	"user-service/internal/user/domain/domainmocks"
+	"user-service/kit/test/pages"
 )
 
 func TestRegisterUserHandler(t *testing.T) {
@@ -23,12 +23,13 @@ func TestRegisterUserHandler(t *testing.T) {
 	userService := register.NewUserRegisterService(repo)
 	router.POST("/register", RegisterUserHandler(userService))
 
+	userPage := pages.NewUserPage(nil)
+
 	t.Run("given a valid request it returns 201", func(t *testing.T) {
 
 		repo.On("FindByEmail", "jlp@federation.com").Return(nil, nil)
 		repo.On("Save", mock.Anything).Return(nil)
 
-		// Define the request payload
 		payload := map[string]string{
 			"id":       "6d0f12c8-9fe9-4506-ad59-d386adbbe5c0",
 			"name":     "Jean Luc Picard",
@@ -36,11 +37,7 @@ func TestRegisterUserHandler(t *testing.T) {
 			"password": "enterprise",
 		}
 
-		body, _ := json.Marshal(payload)
-
-		// Create a request to send to the handler
-		req, _ := http.NewRequest("POST", "/register", bytes.NewBuffer(body))
-		req.Header.Set("Content-Type", "application/json")
+		req, err := userPage.RegisterUser(payload)
 
 		// Create a ResponseRecorder to record the response
 		recorder := httptest.NewRecorder()
@@ -51,7 +48,7 @@ func TestRegisterUserHandler(t *testing.T) {
 
 		// Check the response body
 		var response UserResponse
-		err := json.Unmarshal(recorder.Body.Bytes(), &response)
+		err = json.Unmarshal(recorder.Body.Bytes(), &response)
 		require.NoError(t, err)
 		assert.Equal(t, payload["id"], response.ID)
 		assert.Equal(t, payload["name"], response.Name)
@@ -66,10 +63,9 @@ func TestRegisterUserHandler(t *testing.T) {
 			"email":    "federation.com",
 			"password": "enterprise",
 		}
-		body, _ := json.Marshal(payload)
 
-		req, _ := http.NewRequest("POST", "/register", bytes.NewBuffer(body))
-		req.Header.Set("Content-Type", "application/json")
+		req, err := userPage.RegisterUser(payload)
+		require.NoError(t, err)
 
 		recorder := httptest.NewRecorder()
 		router.ServeHTTP(recorder, req)
@@ -77,7 +73,7 @@ func TestRegisterUserHandler(t *testing.T) {
 		assert.Equal(t, http.StatusBadRequest, recorder.Code)
 		// Check the response body
 		var response map[string]string
-		err := json.Unmarshal(recorder.Body.Bytes(), &response)
+		err = json.Unmarshal(recorder.Body.Bytes(), &response)
 		require.NoError(t, err)
 		assert.Contains(t, response["error"], "Invalid email format")
 	})
@@ -93,18 +89,16 @@ func TestRegisterUserHandler(t *testing.T) {
 			"email":    "first@federation.com",
 			"password": "enterprise",
 		}
-		body, _ := json.Marshal(payload)
 
-		req, _ := http.NewRequest("POST", "/register", bytes.NewBuffer(body))
-		req.Header.Set("Content-Type", "application/json")
-
+		req, err := userPage.RegisterUser(payload)
+		require.NoError(t, err)
 		recorder := httptest.NewRecorder()
 		router.ServeHTTP(recorder, req)
 
 		assert.Equal(t, http.StatusBadRequest, recorder.Code)
 		// Check the response body
 		var response map[string]string
-		err := json.Unmarshal(recorder.Body.Bytes(), &response)
+		err = json.Unmarshal(recorder.Body.Bytes(), &response)
 		require.NoError(t, err)
 		assert.Contains(t, response["error"], "User with email already exists")
 	})
