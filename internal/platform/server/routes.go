@@ -1,14 +1,16 @@
 package server
 
 import (
-	swaggerFiles "github.com/swaggo/files"
-	ginSwagger "github.com/swaggo/gin-swagger"
 	"user-service/internal/platform/server/handler/status"
 	"user-service/internal/platform/server/middleware/auth"
+	"user-service/internal/user/domain"
 	"user-service/internal/user/presentation"
+
+	swaggerFiles "github.com/swaggo/files"
+	ginSwagger "github.com/swaggo/gin-swagger"
 )
 
-// @title           Golang Template API
+// @title           User Service API
 // @version         1.0
 // @description     This is a Golang template API
 // @termsOfService  http://swagger.io/terms/
@@ -23,7 +25,9 @@ import (
 // @host      localhost:9091
 // @BasePath  /api/v1
 
-// @securityDefinitions.basic  BasicAuth
+// @securityDefinitions.apikey Bearer
+// @in header
+// @name Authorization
 
 // @externalDocs.description  OpenAPI
 // @externalDocs.url          https://swagger.io/resources/open-api/
@@ -40,6 +44,10 @@ func (s *Server) registerRoutes() {
 	protected := api.Group("")
 	protected.Use(auth.JWTMiddleware(s.config.JwtSecret))
 	protected.GET("/user/:uuid", presentation.GetUserHandler(s.queryBus))
+
+	adminProtected := protected.Group("")
+	adminProtected.Use(auth.RoleMiddleware([]string{domain.RoleSuperAdmin}))
+	adminProtected.GET("/users", presentation.GetUsersHandler(s.queryBus))
 
 	s.engine.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 }

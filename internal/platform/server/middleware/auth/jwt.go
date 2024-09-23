@@ -43,6 +43,11 @@ func JWTMiddleware(secretKey string) gin.HandlerFunc {
 			return
 		}
 
+		c.Set("ID", c.MustGet("claims").(jwt.MapClaims)["ID"])
+		c.Set("roles", c.MustGet("claims").(jwt.MapClaims)["roles"])
+		c.Set("name", c.MustGet("claims").(jwt.MapClaims)["name"])
+		c.Set("email", c.MustGet("claims").(jwt.MapClaims)["email"])
+
 		c.Next()
 	}
 }

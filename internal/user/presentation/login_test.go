@@ -10,7 +10,7 @@ import (
 	"user-service/internal/user/application/login"
 	"user-service/internal/user/domain"
 	"user-service/internal/user/domain/domainmocks"
-	"user-service/kit"
+	"user-service/kit/model"
 
 	"github.com/gin-gonic/gin"
 	"github.com/stretchr/testify/assert"
@@ -28,9 +28,9 @@ func TestLoginUserHandler(t *testing.T) {
 	userService := login.NewUserLoginService(repo, tokenService)
 	router.POST("/login", LoginUserHandler(userService))
 
-	uid, err := kit.NewUuidValueObject("6d0f12c8-9fe9-4506-ad59-d386adbbe5c0")
+	uid, err := model.NewUuidValueObject("6d0f12c8-9fe9-4506-ad59-d386adbbe5c0")
 	require.NoError(t, err)
-	email, err := kit.NewEmailValueObject("jlp@federation.com")
+	email, err := model.NewEmailValueObject("jlp@federation.com")
 	require.NoError(t, err)
 
 	t.Run("Test correct email and password", func(t *testing.T) {

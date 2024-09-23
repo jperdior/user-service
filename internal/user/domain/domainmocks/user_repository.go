@@ -13,6 +13,43 @@ type UserRepository struct {
 	mock.Mock
 }
 
+// Find provides a mock function with given fields: criteria
+func (_m *UserRepository) Find(criteria domain.Criteria) ([]*domain.User, int64, error) {
+	ret := _m.Called(criteria)
+
+	if len(ret) == 0 {
+		panic("no return value specified for Find")
+	}
+
+	var r0 []*domain.User
+	var r1 int64
+	var r2 error
+	if rf, ok := ret.Get(0).(func(domain.Criteria) ([]*domain.User, int64, error)); ok {
+		return rf(criteria)
+	}
+	if rf, ok := ret.Get(0).(func(domain.Criteria) []*domain.User); ok {
+		r0 = rf(criteria)
+	} else {
+		if ret.Get(0) != nil {
+			r0 = ret.Get(0).([]*domain.User)
+		}
+	}
+
+	if rf, ok := ret.Get(1).(func(domain.Criteria) int64); ok {
+		r1 = rf(criteria)
+	} else {
+		r1 = ret.Get(1).(int64)
+	}
+
+	if rf, ok := ret.Get(2).(func(domain.Criteria) error); ok {
+		r2 = rf(criteria)
+	} else {
+		r2 = ret.Error(2)
+	}
+
+	return r0, r1, r2
+}
+
 // FindByEmail provides a mock function with given fields: email
 func (_m *UserRepository) FindByEmail(email string) (*domain.User, error) {
 	ret := _m.Called(email)

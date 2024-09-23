@@ -5,6 +5,18 @@ definitions:
       error:
         type: string
     type: object
+  model.PaginationDTO:
+    properties:
+      data: {}
+      page:
+        type: integer
+      pageSize:
+        type: integer
+      totalPages:
+        type: integer
+      totalRows:
+        type: integer
+    type: object
   presentation.ForgotPasswordRequest:
     properties:
       email:
@@ -19,9 +31,15 @@ definitions:
     type: object
   presentation.GetUserResponse:
     properties:
+      created_at:
+        type: string
       email:
         type: string
       id:
+        type: string
+      name:
+        type: string
+      updated_at:
         type: string
     type: object
   presentation.LoginRequest:
@@ -82,7 +100,7 @@ info:
     name: Apache 2.0
     url: http://www.apache.org/licenses/LICENSE-2.0.html
   termsOfService: http://swagger.io/terms/
-  title: Golang Template API
+  title: User Service API
   version: "1.0"
 paths:
   /forgot-password:
@@ -222,11 +240,71 @@ paths:
           schema:
             $ref: '#/definitions/kit.ErrorResponse'
       security:
-      - ApiKeyAuth: []
+      - Bearer: []
+      summary: Get a user by ID
+      tags:
+      - user
+  /users:
+    get:
+      consumes:
+      - application/json
+      description: Retrieves a user by their UUID
+      parameters:
+      - description: User ID
+        in: query
+        name: id
+        type: string
+      - description: User Name
+        in: query
+        name: name
+        type: string
+      - description: User Email
+        in: query
+        name: email
+        type: string
+      - description: User Role
+        in: query
+        name: role
+        type: string
+      - description: Page number
+        in: query
+        name: page
+        type: integer
+      - description: Page size
+        in: query
+        name: pageSize
+        type: integer
+      - description: Sort field
+        in: query
+        name: sort
+        type: string
+      - description: Sort direction
+        in: query
+        name: sortDir
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Users pagination
+          schema:
+            $ref: '#/definitions/model.PaginationDTO'
+        "400":
+          description: Invalid Filters
+          schema:
+            $ref: '#/definitions/kit.ErrorResponse'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/kit.ErrorResponse'
+      security:
+      - Bearer: []
       summary: Get a user by ID
       tags:
       - user
 securityDefinitions:
-  BasicAuth:
-    type: basic
+  Bearer:
+    in: header
+    name: Authorization
+    type: apiKey
 swagger: "2.0"
