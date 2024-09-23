@@ -31,7 +31,7 @@ func GetUserHandler(queryBus query.Bus) gin.HandlerFunc {
 
 		findUserQuery := find_user.NewFindUserQuery(uid)
 
-		user, err := queryBus.Ask(findUserQuery)
+		user, err := queryBus.Ask(c, findUserQuery)
 		if err != nil {
 			var domainError *kit.DomainError
 			if errors.As(err, &domainError) {

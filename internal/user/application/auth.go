@@ -2,29 +2,38 @@ package application
 
 import (
 	"context"
-	"github.com/gin-gonic/gin"
 	"user-service/internal/user/domain"
 	"user-service/kit"
 )
 
 func GetAuthenticatedUser(ctx context.Context) (*domain.AuthenticatedUser, error) {
-	ginCtx, ok := ctx.Value("ginContext").(*gin.Context)
-	if !ok {
-		return nil, kit.NewDomainError("invalid context", "user.find_user.error", 500)
-	}
-	id, idExists := ginCtx.Get("ID")
-	roles, rolesExists := ginCtx.Get("roles")
-	name, nameExists := ginCtx.Get("name")
-	email, emailExists := ginCtx.Get("email")
+	id, idExists := ctx.Value("ID").(string)
+	name, nameExists := ctx.Value("name").(string)
+	email, emailExists := ctx.Value("email").(string)
+	rolesValue := ctx.Value("roles")
 
-	if !idExists || !rolesExists || !nameExists || !emailExists {
-		return nil, kit.NewDomainError("unauthorized", "user.find_user.error", 401)
+	if !idExists || !nameExists || !emailExists || rolesValue == nil {
+		return nil, kit.NewDomainError("required fields not found", "user.auth.error", 500)
 	}
+
+	var rolesSlice []string
+	switch v := rolesValue.(type) {
+	case string:
+		rolesSlice = []string{v}
+	case []interface{}:
+		rolesSlice = make([]string, len(v))
+		for i, role := range v {
+			rolesSlice[i] = role.(string)
+		}
+	default:
+		return nil, kit.NewDomainError("unexpected type for roles", "user.auth.error", 500)
+	}
+
 	authenticatedUser := domain.NewAuthenticatedUser(
-		id.(string),
-		name.(string),
-		email.(string),
-		roles.([]string),
+		id,
+		name,
+		email,
+		rolesSlice,
 	)
 	return &authenticatedUser, nil
 }

@@ -45,7 +45,7 @@ func GetUsersHandler(queryBus query.Bus) gin.HandlerFunc {
 		findUsersQuery := find_users.NewFindUserQuery(
 			id, name, email, role, sort, sortDir, page, pageSize)
 
-		userPagination, err := queryBus.Ask(findUsersQuery)
+		userPagination, err := queryBus.Ask(c, findUsersQuery)
 		if err != nil {
 			var domainError *kit.DomainError
 			if errors.As(err, &domainError) {

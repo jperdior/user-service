@@ -43,7 +43,11 @@ func (h FindUserQueryHandler) Handle(ctx context.Context, findUserQuery query.Qu
 	}
 	user, err := h.service.FindUser(authenticatedUser, fuq.ID)
 	if err != nil {
+		if domainErr, ok := err.(*kit.DomainError); ok && domainErr == nil {
+			return user, nil
+		}
 		return nil, err
 	}
+
 	return user, nil
 }

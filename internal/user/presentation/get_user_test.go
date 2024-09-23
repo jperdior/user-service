@@ -29,10 +29,11 @@ func TestGetUserHandler(t *testing.T) {
 
 	gin.SetMode(gin.TestMode)
 	router := gin.Default()
-	router.GET("/user/:uuid", GetUserHandler(queryBus)).Use(auth.JWTMiddleware(secretKey))
+	router.Use(auth.JWTMiddleware(secretKey))
+	router.GET("/user/:uuid", GetUserHandler(queryBus))
 
-	testerUseriD := "7d8a8225-73da-4cc2-97fd-70d8e3baf6ac"
-	testerUid, err := model.NewUuidValueObject(testerUseriD)
+	testerUserId := "7d8a8225-73da-4cc2-97fd-70d8e3baf6ac"
+	testerUid, err := model.NewUuidValueObject(testerUserId)
 	require.NoError(t, err)
 
 	baseUser := model.Base{
@@ -40,11 +41,13 @@ func TestGetUserHandler(t *testing.T) {
 	}
 	authenticatedUser := domain.User{
 		Base:  baseUser,
+		Name:  "Tester",
 		Email: "tester@federation.com",
+		Roles: []string{domain.RoleSuperAdmin},
 	}
 
 	tokenService := token.NewJwtService(secretKey, 1)
-	token, err := tokenService.GenerateToken(&authenticatedUser)
+	jwtToken, err := tokenService.GenerateToken(&authenticatedUser)
 	require.NoError(t, err)
 
 	t.Run("given a user id it should return the user", func(t *testing.T) {
@@ -65,7 +68,7 @@ func TestGetUserHandler(t *testing.T) {
 
 		request, err := http.NewRequest(http.MethodGet, "/user/"+userID, nil)
 		require.NoError(t, err)
-		request.Header.Set("Authorization", "Bearer "+token)
+		request.Header.Set("Authorization", "Bearer "+jwtToken)
 		recorder := httptest.NewRecorder()
 		router.ServeHTTP(recorder, request)
 
@@ -84,7 +87,7 @@ func TestGetUserHandler(t *testing.T) {
 
 		request, err := http.NewRequest(http.MethodGet, "/user/"+userID, nil)
 		require.NoError(t, err)
-		request.Header.Set("Authorization", "Bearer "+token)
+		request.Header.Set("Authorization", "Bearer "+jwtToken)
 
 		recorder := httptest.NewRecorder()
 		router.ServeHTTP(recorder, request)
@@ -96,7 +99,7 @@ func TestGetUserHandler(t *testing.T) {
 		userID := "FDASFSDF"
 		request, err := http.NewRequest(http.MethodGet, "/user/"+userID, nil)
 		require.NoError(t, err)
-		request.Header.Set("Authorization", "Bearer "+token)
+		request.Header.Set("Authorization", "Bearer "+jwtToken)
 
 		recorder := httptest.NewRecorder()
 		router.ServeHTTP(recorder, request)
