@@ -11,6 +11,7 @@ import (
 	"user-service/internal/user/domain"
 	"user-service/internal/user/domain/domainmocks"
 	"user-service/kit/model"
+	"user-service/kit/test/pages"
 
 	"github.com/gin-gonic/gin"
 	"github.com/stretchr/testify/assert"
@@ -66,7 +67,7 @@ func TestGetUserHandler(t *testing.T) {
 
 		repo.On("FindByID", uid.String()).Return(&expectedUser, nil)
 
-		request, err := http.NewRequest(http.MethodGet, "/user/"+userID, nil)
+		request, err := pages.GetUser(userID)
 		require.NoError(t, err)
 		request.Header.Set("Authorization", "Bearer "+jwtToken)
 		recorder := httptest.NewRecorder()
@@ -85,7 +86,7 @@ func TestGetUserHandler(t *testing.T) {
 
 		repo.On("FindByID", userID).Return(nil, nil)
 
-		request, err := http.NewRequest(http.MethodGet, "/user/"+userID, nil)
+		request, err := pages.GetUser(userID)
 		require.NoError(t, err)
 		request.Header.Set("Authorization", "Bearer "+jwtToken)
 
@@ -97,7 +98,7 @@ func TestGetUserHandler(t *testing.T) {
 
 	t.Run("given an invalid user id it should return a bad request error", func(t *testing.T) {
 		userID := "FDASFSDF"
-		request, err := http.NewRequest(http.MethodGet, "/user/"+userID, nil)
+		request, err := pages.GetUser(userID)
 		require.NoError(t, err)
 		request.Header.Set("Authorization", "Bearer "+jwtToken)
 
