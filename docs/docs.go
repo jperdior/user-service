@@ -85,7 +85,7 @@ const docTemplate = `{
                 "summary": "Authenticates a user with the provided email and password",
                 "parameters": [
                     {
-                        "description": "Login request body",
+                        "description": "User login details",
                         "name": "login",
                         "in": "body",
                         "required": true,
@@ -96,7 +96,7 @@ const docTemplate = `{
                 ],
                 "responses": {
                     "200": {
-                        "description": "token",
+                        "description": "OK",
                         "schema": {
                             "$ref": "#/definitions/presentation.LoginResponse"
                         }
@@ -142,7 +142,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/presentation.registerUserRequest"
+                            "$ref": "#/definitions/presentation.RegisterUserRequest"
                         }
                     }
                 ],
@@ -213,7 +213,7 @@ const docTemplate = `{
                     "200": {
                         "description": "User found",
                         "schema": {
-                            "$ref": "#/definitions/presentation.GetUserResponse"
+                            "$ref": "#/definitions/dto.UserDTO"
                         }
                     },
                     "400": {
@@ -309,7 +309,7 @@ const docTemplate = `{
                     "200": {
                         "description": "Users pagination",
                         "schema": {
-                            "$ref": "#/definitions/dto.PaginationDTO"
+                            "$ref": "#/definitions/model.PaginationDTO"
                         }
                     },
                     "400": {
@@ -326,9 +326,99 @@ const docTemplate = `{
                     }
                 }
             }
+        },
+        "/users/{uuid}": {
+            "put": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "description": "Update a user's details. Only non-empty fields will be updated.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "user"
+                ],
+                "summary": "Update a user",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "User ID",
+                        "name": "uuid",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Update User Request",
+                        "name": "updateUserRequest",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/presentation.updateUserRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "User updated successfully",
+                        "schema": {
+                            "$ref": "#/definitions/dto.UserDTO"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/kit.ErrorResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/kit.ErrorResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/kit.ErrorResponse"
+                        }
+                    }
+                }
+            }
         }
     },
     "definitions": {
+        "dto.UserDTO": {
+            "type": "object",
+            "properties": {
+                "created_at": {
+                    "type": "string"
+                },
+                "email": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "roles": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "updated_at": {
+                    "type": "string"
+                }
+            }
+        },
         "kit.ErrorResponse": {
             "type": "object",
             "properties": {
@@ -337,7 +427,7 @@ const docTemplate = `{
                 }
             }
         },
-        "dto.PaginationDTO": {
+        "model.PaginationDTO": {
             "type": "object",
             "properties": {
                 "data": {},
@@ -374,26 +464,6 @@ const docTemplate = `{
                 }
             }
         },
-        "presentation.GetUserResponse": {
-            "type": "object",
-            "properties": {
-                "created_at": {
-                    "type": "string"
-                },
-                "email": {
-                    "type": "string"
-                },
-                "id": {
-                    "type": "string"
-                },
-                "name": {
-                    "type": "string"
-                },
-                "updated_at": {
-                    "type": "string"
-                }
-            }
-        },
         "presentation.LoginRequest": {
             "type": "object",
             "required": [
@@ -413,6 +483,29 @@ const docTemplate = `{
             "type": "object",
             "properties": {
                 "token": {
+                    "type": "string"
+                }
+            }
+        },
+        "presentation.RegisterUserRequest": {
+            "type": "object",
+            "required": [
+                "email",
+                "id",
+                "name",
+                "password"
+            ],
+            "properties": {
+                "email": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "password": {
                     "type": "string"
                 }
             }
@@ -437,19 +530,10 @@ const docTemplate = `{
                 }
             }
         },
-        "presentation.registerUserRequest": {
+        "presentation.updateUserRequest": {
             "type": "object",
-            "required": [
-                "email",
-                "id",
-                "name",
-                "password"
-            ],
             "properties": {
                 "email": {
-                    "type": "string"
-                },
-                "id": {
                     "type": "string"
                 },
                 "name": {
@@ -457,6 +541,12 @@ const docTemplate = `{
                 },
                 "password": {
                     "type": "string"
+                },
+                "roles": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
                 }
             }
         }

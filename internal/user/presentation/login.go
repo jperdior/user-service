@@ -22,13 +22,14 @@ type LoginResponse struct {
 // @Description Authenticates a user and returns a JWT token if credentials are valid
 // @Accept  json
 // @Produce json
-// @Param   login body      LoginRequest  true  "Login request body"
-// @Success 200 {object} 	LoginResponse "token"
+// @Param   login body      LoginRequest true "User login details"
+// @Success 200 {object} 	LoginResponse
 // @Failure 400 {object} kit.ErrorResponse "Invalid input"
 // @Failure 401 {object} kit.ErrorResponse "Invalid credentials"
 // @Failure 500 {object} kit.ErrorResponse "Internal server error"
 // @Router /login [post]
 // @Tags user
+// @example login body LoginRequest{Email="julio.perdiguer@gmail.com", Password="test"}
 func LoginUserHandler(service *login.UserLoginService) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		var req LoginRequest

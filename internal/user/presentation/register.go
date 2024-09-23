@@ -7,7 +7,7 @@ import (
 	"user-service/internal/user/application/register"
 )
 
-type registerUserRequest struct {
+type RegisterUserRequest struct {
 	ID       string `json:"id" binding:"required"`
 	Name     string `json:"name" binding:"required"`
 	Email    string `json:"email" binding:"required"`
@@ -28,7 +28,7 @@ type UserResponse struct {
 // @Description Registers a new user with the provided name, email, and password
 // @Accept json
 // @Produce json
-// @Param request body registerUserRequest true "User registration details" example({ "id": "6d0f12c8-9fe9-4506-ad59-d386adbbe5c0", "name": "Jean Luc Picard", "email": "jlp@federation.com", "password": "enterprise" })
+// @Param request body RegisterUserRequest true "User registration details" example({ "id": "6d0f12c8-9fe9-4506-ad59-d386adbbe5c0", "name": "Jean Luc Picard", "email": "jlp@federation.com", "password": "enterprise" })
 // @Success 201 {object} UserResponse "User registered successfully"
 // @Failure 400 {object} kit.ErrorResponse "Invalid input" example {"error": "invalid input"}
 // @Failure 500 {object} kit.ErrorResponse "Internal server error" example {"error": "internal server error"}
@@ -37,9 +37,10 @@ type UserResponse struct {
 // @Example 500 { "error": "internal server error" }
 // @Router /register [post]
 // @Tags user
+// @example request body RegisterUserRequest{ID="6d0f12c8-9fe9-4506-ad59-d386adbbe5c0", Name="Jean Luc Picard", Email="
 func RegisterUserHandler(service *register.UserRegisterService) gin.HandlerFunc {
 	return func(context *gin.Context) {
-		var request registerUserRequest
+		var request RegisterUserRequest
 		if err := context.ShouldBindJSON(&request); err != nil {
 			context.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 			return
