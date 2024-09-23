@@ -10,8 +10,9 @@ func NewEmailServiceImpl(dialer *gomail.Dialer) *EmailServiceImpl {
 	return &EmailServiceImpl{dialer: dialer}
 }
 
-func (m *EmailServiceImpl) SendPasswordResetEmail(to string) error {
-	return m.SendEmail(to, "Password Reset", "Click here to reset your password")
+func (m *EmailServiceImpl) SendPasswordResetEmail(to, token string) error {
+	body := "Click <a href='http://localhost:8080/reset-password?token=" + token + "'>here</a> to reset your password"
+	return m.SendEmail(to, "Password Reset", body)
 }
 
 func (m *EmailServiceImpl) SendEmail(to, subject, body string) error {

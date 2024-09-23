@@ -12,24 +12,29 @@ import (
 	"testing"
 	"user-service/internal/user/application/forgot_password"
 	"user-service/internal/user/domain/domainmocks"
+	"user-service/kit/test/helpers"
 )
 
 func TestForgotPasswordHandler(t *testing.T) {
 
-	emailServiceMock := new(domainmocks.EmailService)
+	emailService := new(domainmocks.EmailService)
 	userRepositoryMock := new(domainmocks.UserRepository)
-	forgotPasswordService := forgot_password.NewForgotPasswordService(userRepositoryMock, emailServiceMock)
+	tokenMock := new(domainmocks.TokenService)
+	forgotPasswordService := forgot_password.NewForgotPasswordService(userRepositoryMock, emailService, tokenMock)
 
 	gin.SetMode(gin.TestMode)
 	router := gin.Default()
 	router.POST("/forgot-password", ForgotPasswordHandler(forgotPasswordService))
 
 	t.Run("Test correct email", func(t *testing.T) {
-		userRepositoryMock.On("FindByEmail", "jlp@federation.com").Return(nil, nil)
-		emailServiceMock.On("SendPasswordResetEmail", "jlp@federation.com").Return(nil)
+		expectedUser := helpers.CreateUser()
+		resetPasswordToken := "resetPasswordToken"
+		userRepositoryMock.On("FindByEmail", expectedUser.Email).Return(expectedUser, nil)
+		tokenMock.On("GenerateResetPasswordToken", expectedUser).Return(resetPasswordToken, nil)
+		emailService.On("SendPasswordResetEmail", expectedUser.Email, resetPasswordToken).Return(nil)
 
 		payload := map[string]string{
-			"email": "jlp@federation.com",
+			"email": expectedUser.Email,
 		}
 
 		body, _ := json.Marshal(payload)
@@ -43,7 +48,7 @@ func TestForgotPasswordHandler(t *testing.T) {
 
 		assert.Equal(t, http.StatusOK, recorder.Code)
 		userRepositoryMock.AssertExpectations(t)
-		emailServiceMock.AssertExpectations(t)
+		emailService.AssertExpectations(t)
 
 	})
 

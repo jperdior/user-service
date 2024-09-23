@@ -16,10 +16,10 @@ services:
       - USER_DATABASENAME=user-service
       - USER_DATABASEPORT=3306
       - USER_DATABASEDRIVER=mysql
-      - USER_MAILERHOST=smtp.gmail.com
+      - USER_MAILERHOST=somesmtp.com
       - USER_MAILERPORT=587
-      - USER_MAILERUSER=julio.perdiguer@gmail.com
-      - USER_MAILERPASSWORD=very
+      - USER_MAILERUSER=from@email.com
+      - USER_MAILERPASSWORD=somepass
       healthcheck:
           test: ["CMD", "curl", "-f", "http://localhost:9091/status"]
           interval: 1s
