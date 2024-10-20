@@ -15,7 +15,7 @@ func NewUserDTO(user *domain.User) *UserDTO {
 	return &UserDTO{
 		ID:        user.GetID(),
 		Name:      user.Name,
-		Email:     user.Email,
+		Email:     user.Email.Value(),
 		Roles:     user.Roles,
 		CreatedAt: user.CreatedAt.String(),
 		UpdatedAt: user.UpdatedAt.String(),

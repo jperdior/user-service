@@ -1,20 +1,15 @@
 package helpers
 
 import (
-	"github.com/google/uuid"
 	"user-service/internal/platform/token"
 	"user-service/internal/user/domain"
-	"user-service/kit/model"
+	kitDomain "user-service/kit/domain"
 )
 
 // TODO, allow to specify uid
 func GenerateJwtToken(roles []string, secretKey string) (string, error) {
-	uid := uuid.New()
-	baseUser := model.Base{
-		ID: uid[:],
-	}
 	authenticatedUser := domain.User{
-		Base:  baseUser,
+		ID:    kitDomain.RandomUuidValueObject(),
 		Name:  "Tester",
 		Email: "tester@federation.com",
 		Roles: roles,

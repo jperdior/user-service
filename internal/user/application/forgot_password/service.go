@@ -24,7 +24,7 @@ func (s *ForgotPasswordService) SendResetPasswordEmail(email string) *kit.Domain
 	token, err := s.tokenService.GenerateResetPasswordToken(user)
 
 	// send email with password reset link
-	err = s.mailer.SendPasswordResetEmail(user.Email, token)
+	err = s.mailer.SendPasswordResetEmail(user.Email.Value(), token)
 	if err != nil {
 		return kit.NewDomainError(err.Error(), "user.forgot_password.email_error", 500)
 	}

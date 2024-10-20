@@ -2,20 +2,16 @@ package helpers
 
 import (
 	"github.com/go-faker/faker/v4"
-	"github.com/google/uuid"
 	"user-service/internal/user/domain"
-	"user-service/kit/model"
+	kitDomain "user-service/kit/domain"
 )
 
 func CreateUser() *domain.User {
-	uid := uuid.New()
-	baseUser := model.Base{
-		ID: uid[:],
-	}
+	email, _ := kitDomain.NewEmailValueObject(faker.Email())
 	return &domain.User{
-		Base:     baseUser,
+		ID:       kitDomain.RandomUuidValueObject(),
 		Name:     faker.Name(),
-		Email:    faker.Email(),
+		Email:    email,
 		Password: faker.Password(),
 		Roles:    []string{domain.RoleUser},
 	}

@@ -1,15 +1,13 @@
-package infrastructure
+package persistence
 
 import (
-	"github.com/google/uuid"
-	"github.com/stretchr/testify/require"
-	"testing"
-	"user-service/internal/user/domain"
-	"user-service/kit/model"
-
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 	"gorm.io/driver/sqlite"
 	"gorm.io/gorm"
+	"testing"
+	"user-service/internal/user/domain"
+	kitDomain "user-service/kit/domain"
 )
 
 func setupTestDB() *gorm.DB {
@@ -20,7 +18,7 @@ func setupTestDB() *gorm.DB {
 	}
 
 	// Migrate the schema
-	err = db.AutoMigrate(&domain.User{})
+	err = db.AutoMigrate(&UserModel{})
 	if err != nil {
 		return nil
 	}
@@ -29,14 +27,12 @@ func setupTestDB() *gorm.DB {
 
 func TestUserRepositoryImpl_FindByID(t *testing.T) {
 	db := setupTestDB()
-	repo := NewUserRepository(db)
+	repo := NewGormUserRepository(db)
 
-	id, _ := uuid.New().MarshalBinary()
+	uid := kitDomain.RandomUuidValueObject()
 	// Prepare the test user
 	user := &domain.User{
-		Base: model.Base{
-			ID: id,
-		},
+		ID:    uid,
 		Email: "test@example.com",
 	}
 
@@ -45,24 +41,21 @@ func TestUserRepositoryImpl_FindByID(t *testing.T) {
 	require.NoError(t, err)
 
 	// Retrieve the user by ID
-	uid, err := uuid.FromBytes(id)
 	require.NoError(t, err)
 	uidString := uid.String()
 	foundUser, err := repo.FindByID(uidString)
 	require.NoError(t, err)
 	assert.NotNil(t, foundUser)
-	assert.Equal(t, "test@example.com", foundUser.Email)
+	assert.Equal(t, "test@example.com", foundUser.Email.Value())
 }
 
 func TestUserRepositoryImpl_FindByEmail(t *testing.T) {
 	db := setupTestDB()
-	repo := NewUserRepository(db)
-	id, _ := uuid.New().MarshalBinary()
+	repo := NewGormUserRepository(db)
+	uid := kitDomain.RandomUuidValueObject()
 	// Prepare the test user
 	user := &domain.User{
-		Base: model.Base{
-			ID: id,
-		},
+		ID:    uid,
 		Email: "test@example.com",
 	}
 
@@ -74,18 +67,16 @@ func TestUserRepositoryImpl_FindByEmail(t *testing.T) {
 	foundUser, err := repo.FindByEmail("test@example.com")
 	require.NoError(t, err)
 	assert.NotNil(t, foundUser)
-	assert.Equal(t, id, foundUser.ID)
+	assert.Equal(t, uid.String(), foundUser.ID.String())
 }
 
 func TestUserRepositoryImpl_Save(t *testing.T) {
 	db := setupTestDB()
-	repo := NewUserRepository(db)
-	id, _ := uuid.New().MarshalBinary()
-	// Create a new user
+	repo := NewGormUserRepository(db)
+	uid := kitDomain.RandomUuidValueObject()
+	// Prepare the test user
 	user := &domain.User{
-		Base: model.Base{
-			ID: id,
-		},
+		ID:    uid,
 		Email: "newuser@example.com",
 	}
 
@@ -94,10 +85,9 @@ func TestUserRepositoryImpl_Save(t *testing.T) {
 	require.NoError(t, err)
 
 	// Retrieve and verify user was saved correctly
-	uid, err := uuid.FromBytes(id)
 	require.NoError(t, err)
 	uidString := uid.String()
 	foundUser, err := repo.FindByID(uidString)
 	require.NoError(t, err)
-	assert.Equal(t, "newuser@example.com", foundUser.Email)
+	assert.Equal(t, "newuser@example.com", foundUser.Email.Value())
 }

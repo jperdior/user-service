@@ -4,7 +4,7 @@ import (
 	"user-service/internal/user/application/dto"
 	"user-service/internal/user/domain"
 	"user-service/kit"
-	"user-service/kit/model"
+	kitDomain "user-service/kit/domain"
 )
 
 type UserFinderService struct {
@@ -19,7 +19,7 @@ func (s *UserFinderService) FindUser(authenticatedUser *domain.AuthenticatedUser
 	if !authenticatedUser.IsSuperAdmin() && authenticatedUser.ID != ID {
 		return nil, domain.NewUnauthorizedError()
 	}
-	uid, err := model.NewUuidValueObject(ID)
+	uid, err := kitDomain.NewUuidValueObject(ID)
 	if err != nil {
 		return nil, domain.NewInvalidIDError()
 	}
