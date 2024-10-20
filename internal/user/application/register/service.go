@@ -7,7 +7,7 @@ import (
 	"net/http"
 	"user-service/internal/user/domain"
 	"user-service/kit"
-	"user-service/kit/model"
+	kitDomain "user-service/kit/domain"
 )
 
 type UserRegisterService struct {
@@ -20,12 +20,12 @@ func NewUserRegisterService(repo domain.UserRepository) *UserRegisterService {
 
 // RegisterUser handles the registration logic
 func (s *UserRegisterService) RegisterUser(id, name, email, password string) (*domain.User, *kit.DomainError) {
-	uidValueObject, err := model.NewUuidValueObject(id)
+	uidValueObject, err := kitDomain.NewUuidValueObject(id)
 	if err != nil {
 		log.Println(err)
 		return nil, domain.NewInvalidIDError()
 	}
-	emailValueObject, err := model.NewEmailValueObject(email)
+	emailValueObject, err := kitDomain.NewEmailValueObject(email)
 	if err != nil {
 		return nil, domain.NewInvalidEmailError()
 	}

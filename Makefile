@@ -29,22 +29,10 @@ endif
 tests: ### Run tests
 	go test -v ./...
 
-start: check_initialize build run ### Start the application
+start: build run ### Start the application
 
-check_initialize:
-	@if [ ! -f .initialized ]; then \
-		echo "Project not initialized. Running initialize..."; \
-		$(MAKE) initialize; \
-		echo -e "$(GREEN)Project initialized successfully. Please run make start again after initialization.$(RESET)"; \
-		exit 1; \
-	else \
-		echo "$(GREEN)Project already initialized$(RESET)"; \
-	fi
 
 restart : stop start ### Restart the application
-
-initialize:
-	@./ops/scripts/initialize.sh
 
 build:
 	@${DOCKER_COMPOSE} build
@@ -65,4 +53,4 @@ open-docs:
 	open http://localhost:9091/swagger/index.html
 
 generate-mocks:
-	go generate ./...
+	docker run -v "$PWD":/src -w /src vektra/mockery --all

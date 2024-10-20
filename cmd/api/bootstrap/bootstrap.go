@@ -16,6 +16,7 @@ import (
 	"user-service/internal/user/application/register"
 	"user-service/internal/user/application/update_user"
 	"user-service/internal/user/infrastructure"
+	"user-service/internal/user/infrastructure/persistence"
 )
 
 func Run() error {
@@ -46,7 +47,7 @@ func Run() error {
 		queryBus       = inmemory.NewQueryBus()
 		eventBus       = inmemory.NewEventBus()
 		tokenService   = token.NewJwtService(cfg.JwtSecret, cfg.JwtExpiration)
-		userRepository = infrastructure.NewUserRepository(mysql.DB)
+		userRepository = persistence.NewGormUserRepository(mysql.DB)
 		emailService   = infrastructure.NewEmailServiceImpl(mailer.MAILER)
 		// services
 		registerService       = register.NewUserRegisterService(userRepository)

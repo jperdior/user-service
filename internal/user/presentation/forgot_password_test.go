@@ -29,12 +29,12 @@ func TestForgotPasswordHandler(t *testing.T) {
 	t.Run("Test correct email", func(t *testing.T) {
 		expectedUser := helpers.CreateUser()
 		resetPasswordToken := "resetPasswordToken"
-		userRepositoryMock.On("FindByEmail", expectedUser.Email).Return(expectedUser, nil)
+		userRepositoryMock.On("FindByEmail", expectedUser.Email.Value()).Return(expectedUser, nil)
 		tokenMock.On("GenerateResetPasswordToken", expectedUser).Return(resetPasswordToken, nil)
-		emailService.On("SendPasswordResetEmail", expectedUser.Email, resetPasswordToken).Return(nil)
+		emailService.On("SendPasswordResetEmail", expectedUser.Email.Value(), resetPasswordToken).Return(nil)
 
 		payload := map[string]string{
-			"email": expectedUser.Email,
+			"email": expectedUser.Email.Value(),
 		}
 
 		body, _ := json.Marshal(payload)

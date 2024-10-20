@@ -1,4 +1,4 @@
-package model
+package domain
 
 import (
 	"database/sql/driver"
@@ -33,6 +33,18 @@ func NewUuidValueObject(value string) (UuidValueObject, error) {
 		return UuidValueObject{}, err
 	}
 	return UuidValueObject(uid), nil
+}
+
+func NewUuidValueObjectFromBytes(value []byte) (UuidValueObject, error) {
+	uid, err := uuid.FromBytes(value)
+	if err != nil {
+		return UuidValueObject{}, err
+	}
+	return UuidValueObject(uid), nil
+}
+
+func RandomUuidValueObject() UuidValueObject {
+	return UuidValueObject(uuid.New())
 }
 
 func (uidValueObject *UuidValueObject) Scan(value interface{}) error {

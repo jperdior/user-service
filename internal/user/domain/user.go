@@ -3,10 +3,9 @@ package domain
 import (
 	"crypto/rand"
 	"fmt"
-	"github.com/google/uuid"
 	"golang.org/x/crypto/bcrypt"
 	"time"
-	"user-service/kit/model"
+	"user-service/kit/domain"
 )
 
 const (
@@ -17,43 +16,43 @@ const (
 type UserRoles []string
 
 type User struct {
-	model.Base
-	model.BaseAggregate
+	domain.BaseAggregate
+	ID            domain.UuidValueObject
 	Name          string
-	Email         string `gorm:"unique"`
+	Email         domain.EmailValueObject
 	Password      string
 	ResetToken    string
 	ResetTokenExp time.Time
 	Active        bool
-	Roles         UserRoles `gorm:"serializer:json"`
+	Roles         UserRoles
+	CreatedAt     time.Time
+	UpdatedAt     time.Time
 }
 
-func NewUser(uid model.UuidValueObject, name string, email model.EmailValueObject, password string) (*User, error) {
+// Constructor for creating a new user.
+func NewUser(uid domain.UuidValueObject, name string, email domain.EmailValueObject, password string) (*User, error) {
 	hashedPassword, err := hashPassword(password)
 	if err != nil {
 		return nil, err
 	}
-	base, _ := model.NewBase(uid)
 	user := &User{
-		Base:     *base,
+		ID:       uid,
 		Name:     name,
-		Email:    email.Value(),
+		Email:    email,
 		Password: hashedPassword,
 		Active:   true,
 		Roles:    UserRoles{RoleUser},
 	}
-	user.Record(NewUserRegisteredEvent(uid.String(), user.Email, user.Roles))
+	user.Record(NewUserRegisteredEvent(uid.String(), user.Email.Value(), user.Roles))
 	return user, nil
 }
 
+// Helper methods.
 func (u *User) GetID() string {
-	uid, err := uuid.FromBytes(u.Base.ID)
-	if err != nil {
-		return ""
-	}
-	return uid.String()
+	return u.ID.String()
 }
 
+// IsSuperAdmin checks if the user is a super admin.
 func (u *User) IsSuperAdmin() bool {
 	for _, role := range u.Roles {
 		if role == RoleSuperAdmin {
@@ -63,11 +62,13 @@ func (u *User) IsSuperAdmin() bool {
 	return false
 }
 
+// SetPassword sets the password for the user.
 func (u *User) SetPassword(password string) {
 	hashedPassword, _ := hashPassword(password)
 	u.Password = hashedPassword
 }
 
+// hashPassword hashes the password using bcrypt.
 func hashPassword(password string) (string, error) {
 	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
 	if err != nil {
@@ -76,6 +77,7 @@ func hashPassword(password string) (string, error) {
 	return string(hashedPassword), nil
 }
 
+// GenerateResetToken generates a random token for resetting the password.
 func GenerateResetToken() (string, error) {
 	token := make([]byte, 32)
 	_, err := rand.Read(token)

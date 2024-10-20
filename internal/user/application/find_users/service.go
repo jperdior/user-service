@@ -4,6 +4,7 @@ import (
 	"user-service/internal/user/application/dto"
 	"user-service/internal/user/domain"
 	"user-service/kit"
+	kitDomain "user-service/kit/domain"
 	"user-service/kit/model"
 )
 
@@ -20,15 +21,15 @@ func NewFindUsersService(repo domain.UserRepository) *FindUsersService {
 func (s *FindUsersService) FindUsers(
 	ID, name, email, role string, page, pageSize int, sort, sortDir string,
 ) (model.PaginationDTO, error) {
-	pageValueObject, err := model.NewPageValueObject(page)
+	pageValueObject, err := kitDomain.NewPageValueObject(page)
 	if err != nil {
 		return model.PaginationDTO{}, err
 	}
-	pageSizeValueObject, err := model.NewPageSizeValueObject(pageSize)
+	pageSizeValueObject, err := kitDomain.NewPageSizeValueObject(pageSize)
 	if err != nil {
 		return model.PaginationDTO{}, err
 	}
-	sortDirValueObject, err := model.NewSortDirValueObject(sortDir)
+	sortDirValueObject, err := kitDomain.NewSortDirValueObject(sortDir)
 	if err != nil {
 		return model.PaginationDTO{}, err
 	}
