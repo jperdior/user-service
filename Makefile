@@ -46,11 +46,11 @@ stop: ### Stop the docker containers
 analysis: ### Run static analysis and linter
 	docker run --rm -v $(PWD):/app -w /app golangci/golangci-lint:latest golangci-lint run
 
-refresh-openapi: ### Generate openapi docs@${DOCKER_COMPOSE} exec ${API} swag init -g cmd/api/main.go -g internal/platform/server/routes.go -o docs
+refresh-openapi: ### Generate openapi docs
 	docker run --rm -v $(PWD):/code ghcr.io/swaggo/swag:latest init -g cmd/api/main.go -g internal/platform/server/routes.go -o docs
 
 open-docs:
 	open http://localhost:9091/swagger/index.html
 
-generate-mocks:
+generate-mocks: ### Generate mocks
 	docker run -v "$PWD":/src -w /src vektra/mockery --all

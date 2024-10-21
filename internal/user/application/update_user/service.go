@@ -23,7 +23,7 @@ func (s *UpdateUserService) UpdateUser(authenticatedUser *domain.AuthenticatedUs
 	if err != nil {
 		return nil, domain.NewInvalidIDError()
 	}
-	user, err := s.userRepository.FindByID(uid.String())
+	user, err := s.userRepository.FindByID(uid)
 	if err != nil {
 		return nil, kit.NewDomainError(err.Error(), "user.update_user.error", 500)
 	}
