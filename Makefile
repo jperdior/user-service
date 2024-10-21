@@ -5,8 +5,8 @@
 # Variables
 # UNAME		:= $(shell uname -s)
 PWD = $(shell pwd)
-PROJECT_NAME = user-service
-API := api
+PROJECT_NAME = recordari
+API := user
 DOCKER_COMPOSE=docker-compose -p ${PROJECT_NAME} -f ${PWD}/ops/docker/docker-compose.yml
 GREEN=\033[0;32m
 RESET=\033[0m
@@ -46,8 +46,8 @@ stop: ### Stop the docker containers
 analysis: ### Run static analysis and linter
 	docker run --rm -v $(PWD):/app -w /app golangci/golangci-lint:latest golangci-lint run
 
-refresh-openapi: ### Generate openapi docs
-	swag init -g cmd/api/main.go -g internal/platform/server/routes.go -o docs
+refresh-openapi: ### Generate openapi docs@${DOCKER_COMPOSE} exec ${API} swag init -g cmd/api/main.go -g internal/platform/server/routes.go -o docs
+	docker run --rm -v $(PWD):/code ghcr.io/swaggo/swag:latest init -g cmd/api/main.go -g internal/platform/server/routes.go -o docs
 
 open-docs:
 	open http://localhost:9091/swagger/index.html

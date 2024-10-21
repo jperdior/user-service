@@ -1,10 +1,11 @@
 services:
-    api:
+    user:
       build:
         context: ../..
         dockerfile: ops/docker/Dockerfile.local
       ports:
       - "9091:9091"
+      - "40000:40000"
       environment:
       - PORT=9091
       - USER_JWTSECRET=verysecret
@@ -28,6 +29,8 @@ services:
       depends_on:
         database:
           condition: service_healthy
+      networks:
+        - recordari
 
     database:
       image: mariadb:latest
@@ -44,7 +47,12 @@ services:
         interval: 5s
         timeout: 10s
         retries: 5
+      networks:
+        - recordari
 
 
 volumes:
     db:
+
+networks:
+    recordari:
