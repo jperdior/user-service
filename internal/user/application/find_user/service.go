@@ -23,7 +23,7 @@ func (s *UserFinderService) FindUser(authenticatedUser *domain.AuthenticatedUser
 	if err != nil {
 		return nil, domain.NewInvalidIDError()
 	}
-	user, err := s.userRepository.FindByID(uid.String())
+	user, err := s.userRepository.FindByID(uid)
 	if err != nil {
 		return nil, kit.NewDomainError(err.Error(), "user.find_user.error", 500)
 	}

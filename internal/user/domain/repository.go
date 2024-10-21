@@ -1,9 +1,11 @@
 package domain
 
+import kitDomain "user-service/kit/domain"
+
 //go:generate mockery --case=snake --outpkg=domainmocks --output=domainmocks --name=UserRepository
 
 type UserRepository interface {
-	FindByID(id string) (*User, error)
+	FindByID(id kitDomain.UuidValueObject) (*User, error)
 	FindByEmail(email string) (*User, error)
 	Find(criteria Criteria) ([]*User, int64, error)
 	Save(user *User) error

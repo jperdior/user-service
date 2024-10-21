@@ -42,8 +42,7 @@ func TestUserRepositoryImpl_FindByID(t *testing.T) {
 
 	// Retrieve the user by ID
 	require.NoError(t, err)
-	uidString := uid.String()
-	foundUser, err := repo.FindByID(uidString)
+	foundUser, err := repo.FindByID(uid)
 	require.NoError(t, err)
 	assert.NotNil(t, foundUser)
 	assert.Equal(t, "test@example.com", foundUser.Email.Value())
@@ -86,8 +85,7 @@ func TestUserRepositoryImpl_Save(t *testing.T) {
 
 	// Retrieve and verify user was saved correctly
 	require.NoError(t, err)
-	uidString := uid.String()
-	foundUser, err := repo.FindByID(uidString)
+	foundUser, err := repo.FindByID(uid)
 	require.NoError(t, err)
 	assert.Equal(t, "newuser@example.com", foundUser.Email.Value())
 }

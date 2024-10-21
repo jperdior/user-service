@@ -65,7 +65,7 @@ func TestUpdateUserHandler(t *testing.T) {
 
 			userPage := pages.NewUserPage(&jwtToken)
 
-			repo.On("FindByID", tc.expectedUser.GetID()).Return(tc.expectedUser, nil)
+			repo.On("FindByID", tc.expectedUser.ID).Return(tc.expectedUser, nil)
 			repo.On("Save", tc.expectedUser).Return(nil)
 
 			req, err := userPage.UpdateUser(tc.expectedUser.GetID(), tc.payload)
