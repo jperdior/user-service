@@ -22,7 +22,7 @@ import (
 // @Failure 400 {object} kit.ErrorResponse "Invalid UUID"
 // @Failure 404 {object} kit.ErrorResponse "User not found"
 // @Failure 500 {object} kit.ErrorResponse "Internal server error"
-// @Router /user/{uuid} [get]
+// @Router /users/{uuid} [get]
 // @Tags user
 // @Security Bearer
 func GetUserHandler(queryBus query.Bus) gin.HandlerFunc {

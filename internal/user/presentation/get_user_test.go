@@ -9,6 +9,7 @@ import (
 	"user-service/internal/user/application/find_user"
 	"user-service/internal/user/domain"
 	"user-service/internal/user/domain/domainmocks"
+	kitDomain "user-service/kit/domain"
 	"user-service/kit/test/helpers"
 	"user-service/kit/test/pages"
 
@@ -41,7 +42,7 @@ func TestGetUserHandler(t *testing.T) {
 
 		expectedUser := helpers.CreateUser()
 
-		repo.On("FindByID", expectedUser.GetID()).Return(expectedUser, nil)
+		repo.On("FindByID", expectedUser.ID).Return(expectedUser, nil)
 
 		request, err := userPage.GetUser(expectedUser.GetID())
 		require.NoError(t, err)
@@ -58,8 +59,10 @@ func TestGetUserHandler(t *testing.T) {
 	t.Run("given a user id that does not exist it should return a not found error", func(t *testing.T) {
 
 		userID := "1e10c93e-eb59-4562-9dc6-621157c7458e"
+		uid, err := kitDomain.NewUuidValueObject(userID)
+		require.NoError(t, err)
 
-		repo.On("FindByID", userID).Return(nil, nil)
+		repo.On("FindByID", uid).Return(nil, nil)
 
 		request, err := userPage.GetUser(userID)
 		require.NoError(t, err)

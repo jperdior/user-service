@@ -5,7 +5,6 @@ import (
 	"gorm.io/gorm"
 	"time"
 	"user-service/internal/user/domain"
-	"user-service/kit"
 	kitDomain "user-service/kit/domain"
 	"user-service/kit/infrastructure/persistence"
 )
@@ -59,13 +58,9 @@ func (r *GormUserRepository) Find(criteria domain.Criteria) ([]*domain.User, int
 	return domainUsers, totalRows, err
 }
 
-func (r *GormUserRepository) FindByID(id string) (*domain.User, error) {
-	uuidBinary, err := kit.UuidStringToBinary(id)
-	if err != nil {
-		return nil, err
-	}
+func (r *GormUserRepository) FindByID(id kitDomain.UuidValueObject) (*domain.User, error) {
 	var userModel UserModel
-	err = r.db.First(&userModel, "id = ?", uuidBinary).Error
+	err := r.db.First(&userModel, "id = ?", id.Bytes()).Error
 	if err != nil {
 		return nil, err
 	}
