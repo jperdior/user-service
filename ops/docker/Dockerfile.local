@@ -16,8 +16,6 @@ RUN go build -gcflags="all=-N -l" -o main ./cmd/api
 # Install Delve in the build stage
 RUN go install github.com/go-delve/delve/cmd/dlv@latest
 
-RUN go install github.com/swaggo/swag/cmd/swag@latest
-
 # Stage 2: Final image with Delve and the Go application
 FROM alpine
 
