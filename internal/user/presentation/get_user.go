@@ -1,11 +1,9 @@
 package presentation
 
 import (
-	"errors"
 	"net/http"
 	"user-service/internal/user/application/dto"
 	"user-service/internal/user/application/find_user"
-	"user-service/kit"
 	"user-service/kit/query"
 
 	"github.com/gin-gonic/gin"
@@ -33,12 +31,7 @@ func GetUserHandler(queryBus query.Bus) gin.HandlerFunc {
 
 		user, err := queryBus.Ask(c, findUserQuery)
 		if err != nil {
-			var domainError *kit.DomainError
-			if errors.As(err, &domainError) {
-				c.JSON(domainError.Code, gin.H{"error": domainError.Message})
-			} else {
-				c.JSON(http.StatusInternalServerError, gin.H{"error": "Internal server error"})
-			}
+			MapErrorToHTTP(c, err)
 			return
 		}
 		user, ok := user.(*dto.UserDTO)

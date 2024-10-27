@@ -48,7 +48,7 @@ func NewFindUsersQueryHandler(service *FindUsersService) FindUsersQueryHandler {
 func (h FindUsersQueryHandler) Handle(ctx context.Context, findUserQuery query.Query) (interface{}, error) {
 	fuq, ok := findUserQuery.(FindUsersQuery)
 	if !ok {
-		return nil, kit.NewDomainError("unexpected query", "user.find_user.error", 500)
+		return nil, kit.NewDomainError("unexpected query", "user.find_user.error")
 	}
 	user, err := h.service.FindUsers(fuq.ID, fuq.Name, fuq.Email, fuq.Role, fuq.Page, fuq.PageSize, fuq.Sort, fuq.SortDir)
 	if err != nil {

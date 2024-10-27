@@ -5,6 +5,7 @@ import (
 	"github.com/kelseyhightower/envconfig"
 	"time"
 	"user-service/internal/platform/bus/inmemory"
+	"user-service/internal/platform/bus/sns"
 	"user-service/internal/platform/database/mysql"
 	"user-service/internal/platform/mailer"
 	"user-service/internal/platform/server"
@@ -45,12 +46,12 @@ func Run() error {
 	var (
 		commandBus     = inmemory.NewCommandBus()
 		queryBus       = inmemory.NewQueryBus()
-		eventBus       = inmemory.NewEventBus()
+		eventBus       = sns.NewSNSBus(cfg.AwsSnsArn, cfg.AwsRegion, &cfg.AwsEndpoint)
 		tokenService   = token.NewJwtService(cfg.JwtSecret, cfg.JwtExpiration)
 		userRepository = persistence.NewGormUserRepository(mysql.DB)
 		emailService   = infrastructure.NewEmailServiceImpl(mailer.MAILER)
 		// services
-		registerService       = register.NewUserRegisterService(userRepository)
+		registerService       = register.NewUserRegisterService(userRepository, eventBus)
 		loginService          = login.NewUserLoginService(userRepository, tokenService)
 		forgotPasswordService = forgot_password.NewForgotPasswordService(userRepository, emailService, tokenService)
 		updateUserService     = update_user.NewUpdateUserService(userRepository)
@@ -107,4 +108,9 @@ type config struct {
 	MailerPort     int    `required:"true"`
 	MailerUser     string `required:"true"`
 	MailerPassword string `required:"true"`
+
+	// AWS configuration
+	AwsRegion   string `required:"true"`
+	AwsEndpoint string `required:"false"`
+	AwsSnsArn   string `required:"true"`
 }

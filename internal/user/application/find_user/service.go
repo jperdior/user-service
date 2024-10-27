@@ -25,7 +25,7 @@ func (s *UserFinderService) FindUser(authenticatedUser *domain.AuthenticatedUser
 	}
 	user, err := s.userRepository.FindByID(uid)
 	if err != nil {
-		return nil, kit.NewDomainError(err.Error(), "user.find_user.error", 500)
+		return nil, kit.NewDomainError(err.Error(), "user.find_user.error")
 	}
 	if user == nil {
 		return nil, domain.NewUserNotFoundError()

@@ -25,7 +25,7 @@ func (s *UpdateUserService) UpdateUser(authenticatedUser *domain.AuthenticatedUs
 	}
 	user, err := s.userRepository.FindByID(uid)
 	if err != nil {
-		return nil, kit.NewDomainError(err.Error(), "user.update_user.error", 500)
+		return nil, kit.NewDomainError(err.Error(), "user.update_user.error")
 	}
 	if user == nil {
 		return nil, domain.NewUserNotFoundError()
@@ -50,7 +50,7 @@ func (s *UpdateUserService) UpdateUser(authenticatedUser *domain.AuthenticatedUs
 
 	err = s.userRepository.Save(user)
 	if err != nil {
-		return nil, kit.NewDomainError(err.Error(), "user.update_user.error", 500)
+		return nil, kit.NewDomainError(err.Error(), "user.update_user.error")
 	}
 
 	return dto.NewUserDTO(user), nil

@@ -52,7 +52,7 @@ func (s *FindUsersService) FindUsers(
 
 	users, totalRows, err := s.repo.Find(criteria)
 	if err != nil {
-		return model.PaginationDTO{}, kit.NewDomainError(err.Error(), "user.find_users.error", 500)
+		return model.PaginationDTO{}, kit.NewDomainError(err.Error(), "user.find_users.error")
 	}
 
 	// Calculate total pages

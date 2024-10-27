@@ -12,15 +12,17 @@ import (
 	"user-service/internal/user/application/register"
 	"user-service/internal/user/domain"
 	"user-service/internal/user/domain/domainmocks"
+	"user-service/kit/event/eventmocks"
 	"user-service/kit/test/pages"
 )
 
 func TestRegisterUserHandler(t *testing.T) {
 	repo := new(domainmocks.UserRepository)
+	eventBus := new(eventmocks.Bus)
 	gin.SetMode(gin.TestMode)
 	router := gin.Default()
 
-	userService := register.NewUserRegisterService(repo)
+	userService := register.NewUserRegisterService(repo, eventBus)
 	router.POST("/register", RegisterUserHandler(userService))
 
 	userPage := pages.NewUserPage(nil)
@@ -29,6 +31,7 @@ func TestRegisterUserHandler(t *testing.T) {
 
 		repo.On("FindByEmail", "jlp@federation.com").Return(nil, nil)
 		repo.On("Save", mock.Anything).Return(nil)
+		eventBus.On("Publish", mock.Anything).Return(nil)
 
 		payload := map[string]string{
 			"id":       "6d0f12c8-9fe9-4506-ad59-d386adbbe5c0",
@@ -78,7 +81,7 @@ func TestRegisterUserHandler(t *testing.T) {
 		assert.Contains(t, response["error"], "Invalid email format")
 	})
 
-	t.Run("given an existing user it returns 400", func(t *testing.T) {
+	t.Run("given an existing user it returns 409", func(t *testing.T) {
 
 		repo.On("FindByEmail", "first@federation.com").Return(&domain.User{}, nil)
 
@@ -95,7 +98,7 @@ func TestRegisterUserHandler(t *testing.T) {
 		recorder := httptest.NewRecorder()
 		router.ServeHTTP(recorder, req)
 
-		assert.Equal(t, http.StatusBadRequest, recorder.Code)
+		assert.Equal(t, http.StatusConflict, recorder.Code)
 		// Check the response body
 		var response map[string]string
 		err = json.Unmarshal(recorder.Body.Bytes(), &response)

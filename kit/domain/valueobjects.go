@@ -15,7 +15,7 @@ func NewEmailValueObject(value string) (EmailValueObject, error) {
 	const emailRegex = `^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$`
 	re := regexp.MustCompile(emailRegex)
 	if !re.MatchString(value) {
-		return "", kit.NewDomainError("invalid email", "email.invalid", 400)
+		return "", kit.NewDomainError("invalid email", "email.invalid")
 	}
 	return EmailValueObject(value), nil
 }
@@ -87,7 +87,7 @@ func NewSortDirValueObject(value string) (SortDirValueObject, error) {
 		return SortDirValueObject("desc"), nil
 	}
 	if value != "asc" && value != "desc" {
-		return "", kit.NewDomainError("invalid sort direction", "sort.invalid", 400)
+		return "", kit.NewDomainError("invalid sort direction", "sort.invalid")
 	}
 	return SortDirValueObject(value), nil
 }
@@ -116,7 +116,7 @@ func NewPageSizeValueObject(value int) (PageSizeValueObject, error) {
 		return PageSizeValueObject(25), nil
 	}
 	if value > 100 {
-		return -1, kit.NewDomainError("page size must be less than or equal to 100", "page_size.invalid", 400)
+		return -1, kit.NewDomainError("page size must be less than or equal to 100", "page_size.invalid")
 	}
 	return PageSizeValueObject(value), nil
 }
