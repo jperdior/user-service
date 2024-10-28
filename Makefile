@@ -5,8 +5,8 @@
 # Variables
 # UNAME		:= $(shell uname -s)
 PWD = $(shell pwd)
-PROJECT_NAME = recordari
-API := user
+PROJECT_NAME = user
+API := user-api
 DOCKER_COMPOSE=docker-compose -p ${PROJECT_NAME} -f ${PWD}/ops/docker/docker-compose.yml
 GREEN=\033[0;32m
 RESET=\033[0m
