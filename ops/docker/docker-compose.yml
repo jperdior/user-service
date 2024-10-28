@@ -24,6 +24,8 @@ services:
       - USER_AWSSNSARN=arn:aws:sns:us-east-1:000000000000:user-events
       - USER_AWSENDPOINT=http://localstack:4566
       - USER_AWSREGION=us-east-1
+      - AWS_ACCESS_KEY_ID=123
+      - AWS_SECRET_ACCESS_KEY=123
       healthcheck:
           test: ["CMD", "curl", "-f", "http://localhost:9091/status"]
           interval: 1s
