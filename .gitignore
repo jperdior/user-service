@@ -27,3 +27,5 @@ go.work.sum
 
 .idea
 .initialized
+
+ops/docker/volume

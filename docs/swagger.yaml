@@ -226,41 +226,6 @@ paths:
           schema:
             type: string
       summary: Provides the status of the service
-  /user/{uuid}:
-    get:
-      consumes:
-      - application/json
-      description: Retrieves a user by their UUID
-      parameters:
-      - description: User UUID
-        in: path
-        name: uuid
-        required: true
-        type: string
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: User found
-          schema:
-            $ref: '#/definitions/dto.UserDTO'
-        "400":
-          description: Invalid UUID
-          schema:
-            $ref: '#/definitions/kit.ErrorResponse'
-        "404":
-          description: User not found
-          schema:
-            $ref: '#/definitions/kit.ErrorResponse'
-        "500":
-          description: Internal server error
-          schema:
-            $ref: '#/definitions/kit.ErrorResponse'
-      security:
-      - Bearer: []
-      summary: Get a user by ID
-      tags:
-      - user
   /users:
     get:
       consumes:
@@ -320,6 +285,40 @@ paths:
       tags:
       - user
   /users/{uuid}:
+    get:
+      consumes:
+      - application/json
+      description: Retrieves a user by their UUID
+      parameters:
+      - description: User UUID
+        in: path
+        name: uuid
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: User found
+          schema:
+            $ref: '#/definitions/dto.UserDTO'
+        "400":
+          description: Invalid UUID
+          schema:
+            $ref: '#/definitions/kit.ErrorResponse'
+        "404":
+          description: User not found
+          schema:
+            $ref: '#/definitions/kit.ErrorResponse'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/kit.ErrorResponse'
+      security:
+      - Bearer: []
+      summary: Get a user by ID
+      tags:
+      - user
     put:
       consumes:
       - application/json

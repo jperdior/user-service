@@ -1,11 +1,9 @@
 package presentation
 
 import (
-	"errors"
 	"net/http"
 	"user-service/internal/user/application/dto"
 	"user-service/internal/user/application/find_user"
-	"user-service/kit"
 	"user-service/kit/query"
 
 	"github.com/gin-gonic/gin"
@@ -22,7 +20,7 @@ import (
 // @Failure 400 {object} kit.ErrorResponse "Invalid UUID"
 // @Failure 404 {object} kit.ErrorResponse "User not found"
 // @Failure 500 {object} kit.ErrorResponse "Internal server error"
-// @Router /user/{uuid} [get]
+// @Router /users/{uuid} [get]
 // @Tags user
 // @Security Bearer
 func GetUserHandler(queryBus query.Bus) gin.HandlerFunc {
@@ -33,12 +31,7 @@ func GetUserHandler(queryBus query.Bus) gin.HandlerFunc {
 
 		user, err := queryBus.Ask(c, findUserQuery)
 		if err != nil {
-			var domainError *kit.DomainError
-			if errors.As(err, &domainError) {
-				c.JSON(domainError.Code, gin.H{"error": domainError.Message})
-			} else {
-				c.JSON(http.StatusInternalServerError, gin.H{"error": "Internal server error"})
-			}
+			MapErrorToHTTP(c, err)
 			return
 		}
 		user, ok := user.(*dto.UserDTO)

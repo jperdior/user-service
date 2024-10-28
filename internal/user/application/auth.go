@@ -13,7 +13,7 @@ func GetAuthenticatedUser(ctx context.Context) (*domain.AuthenticatedUser, error
 	rolesValue := ctx.Value("roles")
 
 	if !idExists || !nameExists || !emailExists || rolesValue == nil {
-		return nil, kit.NewDomainError("required fields not found", "user.auth.error", 500)
+		return nil, kit.NewDomainError("required fields not found", "user.auth.error")
 	}
 
 	var rolesSlice []string
@@ -26,7 +26,7 @@ func GetAuthenticatedUser(ctx context.Context) (*domain.AuthenticatedUser, error
 			rolesSlice[i] = role.(string)
 		}
 	default:
-		return nil, kit.NewDomainError("unexpected type for roles", "user.auth.error", 500)
+		return nil, kit.NewDomainError("unexpected type for roles", "user.auth.error")
 	}
 
 	authenticatedUser := domain.NewAuthenticatedUser(

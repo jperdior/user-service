@@ -1,12 +1,10 @@
 package presentation
 
 import (
-	"errors"
 	"github.com/gin-gonic/gin"
 	"net/http"
 	"user-service/internal/user/application"
 	"user-service/internal/user/application/update_user"
-	"user-service/kit"
 )
 
 type updateUserRequest struct {
@@ -41,7 +39,7 @@ func UpdateUserHandler(service *update_user.UpdateUserService) gin.HandlerFunc {
 
 		authenticatedUser, err := application.GetAuthenticatedUser(c)
 		if err != nil {
-			c.JSON(http.StatusUnauthorized, gin.H{"error": err.Error()})
+			MapErrorToHTTP(c, err)
 			return
 		}
 
@@ -54,12 +52,7 @@ func UpdateUserHandler(service *update_user.UpdateUserService) gin.HandlerFunc {
 			request.Roles,
 		)
 		if err != nil {
-			var domainError *kit.DomainError
-			if errors.As(err, &domainError) {
-				c.JSON(domainError.Code, gin.H{"error": domainError.Message})
-			} else {
-				c.JSON(http.StatusInternalServerError, gin.H{"error": "Internal server error"})
-			}
+			MapErrorToHTTP(c, err)
 			return
 		}
 

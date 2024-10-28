@@ -39,7 +39,7 @@ func (h FindUserQueryHandler) Handle(ctx context.Context, findUserQuery query.Qu
 	}
 	fuq, ok := findUserQuery.(FindUserQuery)
 	if !ok {
-		return nil, kit.NewDomainError("unexpected query", "user.find_user.error", 500)
+		return nil, kit.NewDomainError("unexpected query", "user.find_user.error")
 	}
 	user, err := h.service.FindUser(authenticatedUser, fuq.ID)
 	if err != nil {

@@ -43,7 +43,7 @@ func LoginUserHandler(service *login.UserLoginService) gin.HandlerFunc {
 		// Call login service with email and password
 		token, err := service.Login(req.Email, req.Password)
 		if err != nil {
-			c.JSON(err.Code, gin.H{"error": err.Error()})
+			MapErrorToHTTP(c, err)
 			return
 		}
 

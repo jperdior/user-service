@@ -1,11 +1,9 @@
 package presentation
 
 import (
-	"errors"
 	"net/http"
 	"strconv"
 	"user-service/internal/user/application/find_users"
-	"user-service/kit"
 	"user-service/kit/query"
 
 	"github.com/gin-gonic/gin"
@@ -47,12 +45,7 @@ func GetUsersHandler(queryBus query.Bus) gin.HandlerFunc {
 
 		userPagination, err := queryBus.Ask(c, findUsersQuery)
 		if err != nil {
-			var domainError *kit.DomainError
-			if errors.As(err, &domainError) {
-				c.JSON(domainError.Code, gin.H{"error": domainError.Message})
-			} else {
-				c.JSON(http.StatusInternalServerError, gin.H{"error": "Internal server error"})
-			}
+			MapErrorToHTTP(c, err)
 			return
 		}
 		c.JSON(http.StatusOK, userPagination)

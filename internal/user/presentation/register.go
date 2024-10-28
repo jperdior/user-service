@@ -48,7 +48,7 @@ func RegisterUserHandler(service *register.UserRegisterService) gin.HandlerFunc 
 
 		user, err := service.RegisterUser(request.ID, request.Name, request.Email, request.Password)
 		if err != nil {
-			context.JSON(err.Code, gin.H{"error": err.Message})
+			MapErrorToHTTP(context, err)
 			return
 		}
 

@@ -36,7 +36,7 @@ func ForgotPasswordHandler(service *forgot_password.ForgotPasswordService) gin.H
 
 		err := service.SendResetPasswordEmail(req.Email)
 		if err != nil {
-			c.JSON(err.Code, gin.H{"error": err.Error()})
+			MapErrorToHTTP(c, err)
 			return
 		}
 
