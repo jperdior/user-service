@@ -42,7 +42,19 @@ func NewSNSBus(topicArn, region string, endpoint *string) *SNSBus {
 // Publish publishes events to the SNS topic.
 func (b *SNSBus) Publish(events []event.Event) error {
 	for _, evt := range events {
-		message, err := json.Marshal(evt)
+
+		data, err := json.Marshal(evt.ToDTO())
+		if err != nil {
+			log.Printf("Error marshalling event data: %s - %s\n", evt.Type(), err)
+			continue
+		}
+
+		envelope := event.EventEnvelope{
+			EventType: evt.Type(),
+			Data:      data,
+		}
+		message, err := json.Marshal(envelope)
+		log.Printf("Marshalled event: %s\n", string(message))
 		if err != nil {
 			log.Printf("Error marshalling event: %s - %s\n", evt.Type(), err)
 			continue

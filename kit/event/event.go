@@ -1,6 +1,7 @@
 package event
 
 import (
+	"encoding/json"
 	"github.com/google/uuid"
 	"time"
 )
@@ -21,12 +22,22 @@ type Handler interface {
 // Type represents a domain event type.
 type Type string
 
+// EventDTO represents a data transfer object for an event.
+type EventDTO interface{}
+
+// EventEnvelope represents an envelope for an event.
+type EventEnvelope struct {
+	EventType Type            `json:"type"` // The type of the event
+	Data      json.RawMessage `json:"data"`
+}
+
 // Event represents a domain event.
 type Event interface {
 	ID() string
 	AggregateID() string
 	OccurredOn() time.Time
 	Type() Type
+	ToDTO() EventDTO
 }
 
 type BaseEvent struct {
@@ -53,4 +64,26 @@ func (b BaseEvent) OccurredOn() time.Time {
 
 func (b BaseEvent) AggregateID() string {
 	return b.aggregateID
+}
+
+func (b BaseEvent) ToDTO() BaseEventDTO {
+	return BaseEventDTO{
+		EventID:     b.eventID,
+		AggregateID: b.aggregateID,
+		OccurredOn:  b.occurredOn,
+	}
+}
+
+type BaseEventDTO struct {
+	EventID     string    `json:"event_id"`
+	AggregateID string    `json:"aggregate_id"`
+	OccurredOn  time.Time `json:"occurred_on"`
+}
+
+func (b *BaseEventDTO) ToBaseEvent() BaseEvent {
+	return BaseEvent{
+		eventID:     b.EventID,
+		aggregateID: b.AggregateID,
+		occurredOn:  b.OccurredOn,
+	}
 }
